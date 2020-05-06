@@ -3,7 +3,7 @@ SA2 Randomizer
 
 Sonic Adventure 2 Rando (SA2Rando or SA2R) is a mod of the PC Steam Version of Sonic Adventure 2: Battle. The aim of the project is to randomize as much as possible in the game, while maintaining the playablity of it. The idea of SA2R started as a simple project to load random characters into random stages in a random order with some logic to make it beatable. It has since exploded! The current goal of SA2R is to make all missions completable and enjoyable with as many characters in the game, without sacrificing too much for it.
 
-Eventually, all A-ranks and possibly even 180 emblems will be possible!
+All A-ranks and possibly even 180 emblems should be possible on most seeds and most settings!
 
 Download
 --------
