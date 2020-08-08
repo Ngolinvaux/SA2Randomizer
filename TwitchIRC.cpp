@@ -152,6 +152,7 @@ bool TwitchIRC::sendChat(const char *msg, const char *channel)
 	string c = channel;
 	string s = "PRIVMSG #" + c + " :"+msg + "\r\n";
 	sendData(s.c_str());
+	return false;
 }
 
 void TwitchIRC::msgHandle(char * buf)
