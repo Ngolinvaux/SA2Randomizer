@@ -11,4 +11,5 @@ vector<SubtitleQueue>  vl2Text(int a,bool tag);
 std::vector<SubtitleQueue> displaySub(int r, int style,bool tag);
 int vlBasedOnTime(int idx, double tolerance);
 int randVoiceC(int a, int vlRandoType);
+static bool __cdecl lineReferencesMaria(int a);
 #endif

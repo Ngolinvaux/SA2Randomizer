@@ -100,3 +100,9 @@ int randVoiceC(int a, int vlRandoType) {
 	else if (vlRandoType == 4) return vlBasedOnTime(a,0.2);
 	return r;//4734 both or 2727 SA2 Only
 }
+
+static bool __cdecl lineReferencesMaria(int a) {
+	if ((a >= 353 && a <= 361) || (a >= 647 && a <= 655) || (a >= 689 && a <= 691) || a == 1576) return true;
+	if (isMariaLine(a)) return true;
+	return (string::npos != subTitles[a % 2727].find("Maria"));
+}
