@@ -2458,7 +2458,7 @@ int __cdecl LoadStartPosition_ri(int playerNum, NJS_VECTOR *position, Rotation *
 				if (shadowBounce) v4->Upgrades = v4->Upgrades | 16;
 				if (AltCharacter[0] == 1 && !noQoL) {
 					
-					v4->PhysData.BrakeSpeed = -0.07;
+					v4->PhysData.Brake = -0.07;
 					v4->PhysData.GroundDecel = -0.03;
 				}
 				break;
@@ -2469,22 +2469,22 @@ int __cdecl LoadStartPosition_ri(int playerNum, NJS_VECTOR *position, Rotation *
 				list = RougeStartList;
 				if (!noQoL) {
 					v4->UnderwaterTime = 32000;
-					if (AltCharacter[0] == 1) v4->PhysData.BaseSpeed = 1.9;
+					if (AltCharacter[0] == 1) v4->PhysData.MaxAccel = 1.9;
 				}
 				break;
 			case Characters_Tails:
 				list = TailsStartList;
-				if(!noQoL) v4->PhysData.BaseSpeed = 2.4;
+				if(!noQoL) v4->PhysData.MaxAccel = 2.4;
 				break;
 			case Characters_Eggman:
 				list = EggmanStartList;
-				v4->PhysData.InitialJumpSpeed = 2.2;
+				v4->PhysData.JumpSpeed = 2.2;
 				v4->PhysData.HangTime = 10;
 				break;
 			case Characters_MechEggman:
 				list = MechEggmanStartList;
 				if (AltCharacter[0] == 1 && !noQoL) {
-					v4->PhysData.BaseSpeed = 1.3;
+					v4->PhysData.MaxAccel = 1.3;
 				}
 				break;
 			case Characters_MechTails:
@@ -2495,7 +2495,7 @@ int __cdecl LoadStartPosition_ri(int playerNum, NJS_VECTOR *position, Rotation *
 				if (CurrentLevel != LevelIDs_FinalHazard) {
 						v4->UnderwaterTime = 32000;
 					if (!noQoL) {
-						v4->PhysData.BaseSpeed = 8;
+						v4->PhysData.MaxAccel = 8;
 						v4->PhysData.HSpeedCap = 30;
 						v4->PhysData.VSpeedCap = 30;
 					}
@@ -4593,7 +4593,7 @@ void reactToString(string s) {
 		}
 		else if (s.compare("!jump") == 0) {
 			if (GameState == 16 && MainCharObj2[0]) {
-				MainCharObj2[0]->PhysData.InitialJumpSpeed *= f;
+				MainCharObj2[0]->PhysData.JumpSpeed *= f;
 				MainCharObj2[0]->PhysData.HangTime *= f;
 				currency[msg.user].currency -= cost;
 				sendChat(retMsg);
@@ -4727,7 +4727,7 @@ void reactToFlag() {
 		//AwardSpeedShoes(0);
 		break;
 	case(11):
-		MainCharObj2[0]->PhysData.InitialJumpSpeed *= f;
+		MainCharObj2[0]->PhysData.JumpSpeed *= f;
 		MainCharObj2[0]->PhysData.HangTime *= f;
 		break;
 	case(12):
