@@ -310,6 +310,11 @@ bool isOmochaoLine(int line) {
 	return false;
 }
 
+bool isMariaLine(int line) {
+	for (int i = 0; i < sizeOfArray(MariaLines); i++)  if (line == MariaLines[i]) return true;
+	return false;
+}
+
 int returnSameCharALLGAMELine(int line) {
 	for (int i = 0; i < 11; i++) {
 		for (int j = 0; j < sizeOfArraysAllGame[i]; j++) {
