@@ -5,6 +5,8 @@ Sonic Adventure 2 Rando (SA2Rando or SA2R) is a mod of the PC Steam Version of S
 
 All A-ranks and possibly even 180 emblems should be possible on most seeds and most settings!
 
+A link to a [trailer for the upcoming patch]
+(https://youtu.be/Of6tb5Tm_Sw)
 Download
 --------
 
