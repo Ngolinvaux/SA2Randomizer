@@ -3,12 +3,123 @@
 #include "KartRando.h"
 
 
+vector<ObjectFuncPtr> FlyingEnemyFunctionsAddress = {(ObjectFuncPtr)0x501530,(ObjectFuncPtr)0x7A0D10,(ObjectFuncPtr)0x7A21C0,(ObjectFuncPtr)0x4FC700,(ObjectFuncPtr)0x4F8F90};
+vector<ObjectFuncPtr> GroundEnemyFunctionsAddress = {(ObjectFuncPtr)0x4FF990,(ObjectFuncPtr)0x50D790,(ObjectFuncPtr)0x7A1600,(ObjectFuncPtr)0x50A850,(ObjectFuncPtr)0x4FDD00,(ObjectFuncPtr)0x503140,(ObjectFuncPtr)0x50E4D0,(ObjectFuncPtr)0x50F150 };
+vector<ObjectFuncPtr> MovingEnemyFunctionsAddress = {(ObjectFuncPtr)0x505C20,(ObjectFuncPtr)0x50C3F0 };
+
+vector<ObjectFuncPtr> ValidChaoObjs = {};//TODO
+
+
+vector<char*> EnemyNames = {"E KUMI","E AI"};
+
+vector<ObjectListEntry*> StageObjLists = {
+	{},
+	{},
+	{},
+	GreenForestObjs,
+	WhiteJungleObjs,
+	PumpkinHillObjs,
+	SkyRailObjs,
+	AquaticMineObjs,
+	SecurityHallObjs,
+	PrisonLaneObjs,
+	MetalHarborObjs,
+	IronGateObjs,
+	WeaponsBedObjs,
+	CityEscapeObjs,
+	RadicalHighwayObjs,
+	{},
+	WildCanyonObjs,
+	MissionStreetObjs,
+	DryLagoonObjs,
+	{},
+	{},
+	SandOceanObjs,
+	CrazyGadgetObjs,
+	HiddenBaseObjs,
+	EternalEngineObjs,
+	DeathChamberObjs,
+	EggQuartersObjs,
+	LostColonyObjs,
+	PyramidCaveObjs,
+	{},
+	FinalRushObjs,
+	GreenHillZoneObjs,
+	MeteorHerdObjs,
+	{},
+	CCSonicObjs,
+	CCEggmanObjs,
+	CCTailsObjs,
+	CCRougeObjs,
+	CCKnuxObjs,
+	{},
+	FinalChaseObjs,
+	{},
+	{},
+	CosmicWallObjs,
+	MadSpaceObjs
+};
+
+
+vector<int> StageObjListsLength = {
+	0,
+	0,
+	0,
+	GreenForestObjs_Length,
+	WhiteJungleObjs_Length,
+	PumpkinHillObjs_Length,
+	SkyRailObjs_Length,
+	AquaticMineObjs_Length,
+	SecurityHallObjs_Length,
+	PrisonLaneObjs_Length,
+	MetalHarborObjs_Length,
+	IronGateObjs_Length,
+	WeaponsBedObjs_Length,
+	CityEscapeObjs_Length,
+	RadicalHighwayObjs_Length,
+	0,
+	WildCanyonObjs_Length,
+	MissionStreetObjs_Length,
+	DryLagoonObjs_Length,
+	0,
+	0,
+	SandOceanObjs_Length,
+	CrazyGadgetObjs_Length,
+	HiddenBaseObjs_Length,
+	EternalEngineObjs_Length,
+	DeathChamberObjs_Length,
+	EggQuartersObjs_Length,
+	LostColonyObjs_Length,
+	PyramidCaveObjs_Length,
+	0,
+	FinalRushObjs_Length,
+	GreenHillZoneObjs_Length,
+	MeteorHerdObjs_Length,
+	0,
+	CCSonicObjs_Length,
+	CCEggmanObjs_Length,
+	CCTailsObjs_Length,
+	CCRougeObjs_Length,
+	CCKnuxObjs_Length,
+	0,
+	FinalChaseObjs_Length,
+	0,
+	0,
+	CosmicWallObjs_Length,
+	MadSpaceObjs_Length
+};
+
+
+
+
+
+
 vector<int> stage0Chao = {};
 vector<int> stage1Chao = {};
 vector<int> stage2Chao = {};
 vector<int> stage3Chao = {0,1,2,3,4,5,6,7,0x27};
 vector<int> stage4Chao = {0,1,2,3,4,5,6,7,0xa,0xb};
-vector<int> stage5Chao = {0,1,2,3,4,5,6,7,8,9,0xa};
+vector<int> stage5Chao = {0,2,3,4,5,6,8,9,0xa};
 vector<int> stage6Chao = {0,1,2,3,4,5,6,7,9,0xa,0x16};
 vector<int> stage7Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xc,0xd };
 vector<int> stage8Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
@@ -16,7 +127,7 @@ vector<int> stage9Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage10Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage11Chao = {0,1,2,3,4,5,6,7,9,0xa};
 vector<int> stage12Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
-vector<int> stage13Chao = {0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd};
+vector<int> stage13Chao = {0,1,3,4,5,6,7,8,9,0xa,0xc,0xd};
 vector<int> stage14Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage15Chao = {};
 vector<int> stage16Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
@@ -43,11 +154,11 @@ vector<int> stage36Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage37Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage38Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage39Chao = {};
-vector<int> stage40Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
+vector<int> stage40Chao = { 0,1,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
 vector<int> stage41Chao = {};
 vector<int> stage42Chao = {};
 vector<int> stage43Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
-vector<int> stage44Chao = { 0,1,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd };
+vector<int> stage44Chao = { 0,1,3,4,5 };
 
 vector < vector<int>>  stageAllChao = {
 
@@ -300,14 +411,20 @@ vector<setObj> randomizeChao(vector<setObj> objects, int stage) {
 	while(!inVector(objects[r].id, stageAllChao[stage])) r = rand() % l;
 	
 
+
+
 	for (int i = 0; i < l; i++) {
 		if (objects[i].id == stageAllChaoID[stage] && objects[i].xRot == 1) {
-			objects[i].x = objects[r].x;
-			objects[i].y = objects[r].y+10;
-			objects[i].z = objects[r].z;
+			objects[i].x = objects[r].x + 1;
+			objects[i].y = objects[r].y+15;
+			if (objects[r].id == 0) objects[i].y -= 15;
+			objects[i].z = objects[r].z + 1;
 			return objects;
 		}
 	}
+
+
+
 
 
 	return objects;
@@ -316,24 +433,72 @@ vector<setObj> randomizeChao(vector<setObj> objects, int stage) {
 
 
 
-void randomizeEnemies(string savePath, int stage, bool chao,bool enemies) {
+NJS_VECTOR randomizeEnemies(string savePath, int stage, bool chao,bool enemies, bool chaos) {
+
+	NJS_VECTOR chaoLocation = { 0,0,0 };
+	if (stage > 44) return chaoLocation;
 	string folder = savePath + "\\gd_PC\\set00";
 	if (stage < 10) folder += "0";
-	folder += std::to_string(stage) + "_s.bin";
-	
+	if(MissionNum == 4) folder += std::to_string(stage) + "_hd_s.bin";
+	else folder += std::to_string(stage) + "_s.bin";
+
 	vector<setObj> objects = readSetObjs(folder);
 	int len = objects.size();
+
+	if (chao) objects = randomizeChao(objects, stage);
+	for (int i = 0; i < len; i++) {
+		if (objects[i].id == stageAllChaoID[stage] && objects[i].xRot == 1) {
+			chaoLocation = { objects[i].x,objects[i].y,objects[i].z };
+		}
+	}
+
+	unsigned short doorID = 0;
+	for (int i = 0; i < StageObjListsLength[stage]; i++) {
+		if (StageObjLists[stage][i].Function == (ObjectFuncPtr)0x778700 || StageObjLists[stage][i].Function == (ObjectFuncPtr)0x4D01C0 || StageObjLists[stage][i].Function == (ObjectFuncPtr)0x769930 || StageObjLists[stage][i].Function == (ObjectFuncPtr)0x788460) {
+			doorID = i;
+			PrintInt(doorID);
+			//PrintDebug("^^^^\n\n\n\n");
+		}
+	}
 	
-	if (enemies) {
-		int subLen = 0;
-		for (int i = 0; i < len; i++) {
-			if (inVector(objects[i].id, stageAllE[stage])) {
+
+	int subLen = 0;
+	for (int i = 0; i < len; i++) {
+		if (inVector(objects[i].id, stageAllE[stage])) {
+			if (enemies && !isHuntingStagei(stage) && CurrentLevel != LevelIDs_MetalHarbor && CurrentLevel != LevelIDs_CannonsCoreS && CurrentLevel != LevelIDs_CrazyGadget) {
 				subLen = stageAllE[stage].size();
 				objects[i].id = stageAllE[stage][rand() % subLen];
 			}
+			if (isHuntingStagei(stage) && (enemies || chaos)) {
+				objects[i].xRot &= 0x00FF;
+				//objects[i].xRot &= 0x0011;
+				objects[i].xRot |= 0xFF00;
+			}
+		}
+		if (objects[i].id == doorID && ((enemies || chaos) || (isMechless(CurrentCharacter)&&CurrentLevel!=LevelIDs_LostColony))) {
+			objects[i].zRot = 3;
+
+		}
+		if (CurrentLevel == LevelIDs_EternalEngine) {
+			if (objects[i].id == 0x49 && ((enemies || chaos) || isMechless(CurrentCharacter))) {
+				objects[i].zRot = 3;
+
+			}
+		}
+		if (CurrentLevel == LevelIDs_PrisonLane) {
+			if ((objects[i].id == 0x4A || objects[i].id == 0x4B)&& (enemies || chaos)) {
+				objects[i].xRot = -1;
+
+			}
+		}
+		if (objects[i].id == 0x38 &&  CurrentLevel == LevelIDs_CosmicWall && MissionNum == 4) {
+			objects[i].zRot *= 3;
+			objects[i].v3 /= 3;
+
 		}
 	}
-	if (chao) objects = randomizeChao(objects,stage);
+	
+
 
 
 	std::ofstream bin(folder, std::ios::binary);
@@ -344,5 +509,27 @@ void randomizeEnemies(string savePath, int stage, bool chao,bool enemies) {
 	}
 	bin.close();
 
+	if ((enemies || chaos) && !isHuntingStagei(stage)) {
+		for (int i = 0; i < StageObjListsLength[CurrentLevel]; i++) {
+			//PrintDebug("I LOVE BABE\n");
+			if(!isSpeed(CurrentCharacter) || (CurrentLevel != LevelIDs_MetalHarbor && CurrentLevel != LevelIDs_CannonsCoreS && CurrentLevel != LevelIDs_CrazyGadget))
+				if (find(FlyingEnemyFunctionsAddress.begin(), FlyingEnemyFunctionsAddress.end(), StageObjLists[CurrentLevel][i].Function) != FlyingEnemyFunctionsAddress.end())
+				StageObjLists[CurrentLevel][i].Function = FlyingEnemyFunctionsAddress[rand() % FlyingEnemyFunctionsAddress.size()];
+
+			if (find(GroundEnemyFunctionsAddress.begin(), GroundEnemyFunctionsAddress.end(), StageObjLists[CurrentLevel][i].Function) != GroundEnemyFunctionsAddress.end())
+				StageObjLists[CurrentLevel][i].Function = GroundEnemyFunctionsAddress[rand() % GroundEnemyFunctionsAddress.size()];
+
+			if (!isSpeed(CurrentCharacter) || (CurrentLevel != LevelIDs_MetalHarbor && CurrentLevel != LevelIDs_CannonsCoreS && CurrentLevel != LevelIDs_CrazyGadget))
+				if (find(MovingEnemyFunctionsAddress.begin(), MovingEnemyFunctionsAddress.end(), StageObjLists[CurrentLevel][i].Function) != MovingEnemyFunctionsAddress.end())
+				StageObjLists[CurrentLevel][i].Function = MovingEnemyFunctionsAddress[rand() % MovingEnemyFunctionsAddress.size()];
+			
+			
+
+		}
+		
+	}
+
+
+	return chaoLocation;
 
 }

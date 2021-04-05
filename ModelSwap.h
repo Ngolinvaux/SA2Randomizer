@@ -6,6 +6,6 @@
 #include "HelperFuns.h"
 
 
-ModelCredits swapModel(int c, string path, HelperFunctions &hf);
-vector<ModelCredits> getAllInfo(int c, string path);
+int swapModel(int c, string path, HelperFunctions &hf);
+vector<ModelCredits> getAllInfo(int c, string path,int alt);
 #endif

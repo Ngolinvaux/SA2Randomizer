@@ -12,7 +12,7 @@
 #include <vector>
 #include <mutex>
 #pragma comment(lib, "Ws2_32.lib")
-#define MAXDATASIZE 100
+#define MAXDATASIZE 700
 
 
 class TwitchIRC

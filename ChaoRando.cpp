@@ -157,9 +157,19 @@ ChaoDataBaseGap randomizeChao(ChaoDataBaseGap cdb) {
 	saveChao = cdb;
 
 	saveChao.Color = rand() % 256;
-	saveChao.Shiny = rand() % 2;
-	saveChao.MonotoneHighlights = rand() % 2;
-	saveChao.Texture = rand() % 110;
+	saveChao.Shiny = rand() % 5;
+	if (saveChao.Shiny == 4) saveChao.Shiny = 1;
+	else saveChao.Shiny = 0;
+	if (saveChao.Shiny) {
+		saveChao.MonotoneHighlights = rand() % 5;
+		if (saveChao.MonotoneHighlights) saveChao.MonotoneHighlights = 1;
+		else saveChao.MonotoneHighlights = 0;
+	}
+	else {
+		saveChao.MonotoneHighlights = rand() % 2;
+		saveChao.Texture = rand() % 110;
+	}
+	
 	
 
 
@@ -214,11 +224,75 @@ ChaoDataBaseGap randomizeChao(ChaoDataBaseGap cdb) {
 
 	saveChao.Lifespan = 200;
 	saveChao.EvolutionProgress = rand() % 13 / 10.0;
-
+	//saveChao.field_190[0x4E4] |= 2;
 	//saveChao.Garden = 1;
 	cdb = saveChao;
 	return saveChao;
 }
+
+
+ChaoType intToType(int i) {
+	ChaoType ar[] = {
+	ChaoType_Good,
+	ChaoType_Bad,
+	ChaoType_Neutral_Normal,
+	ChaoType_Hero_Normal,
+	ChaoType_Dark_Normal,
+	ChaoType_Neutral_Swim,
+	ChaoType_Hero_Swim,
+	ChaoType_Dark_Swim,
+	ChaoType_Neutral_Fly,
+	ChaoType_Hero_Fly,
+	ChaoType_Dark_Fly,
+	ChaoType_Neutral_Run,
+	ChaoType_Hero_Run,
+	ChaoType_Dark_Run,
+	ChaoType_Neutral_Power,
+	ChaoType_Hero_Power,
+	ChaoType_Dark_Power,
+	ChaoType_Neutral_Chaos,
+	ChaoType_Hero_Chaos,
+	ChaoType_Dark_Chaos,
+	ChaoType_Tails,
+	ChaoType_Knuckles,
+	ChaoType_Amy };
+
+	return ar[i];
+
+}
+
+ChaoData* randomizeCarriedChao(ChaoData* cdb) {
+
+
+
+	cdb->data.Color = rand() % 256;
+	cdb->data.Shiny = rand() % 2;
+	cdb->data.MonotoneHighlights = rand() % 2;
+	cdb->data.Texture = rand() % 110;
+
+
+	string name(chao[rand() % chaoCNT]);
+	int len = 7;
+	if (name.length() < 7) len = name.length();
+	for (int i = 0; i < len; i++) {
+		cdb->data.Name[i] = encodeLetter(name[i]);
+	}
+	
+	
+	cdb->data.Type = intToType(rand() % 25 + 1);
+	
+
+	if (rand() % 2 == 0) cdb->data.PowerRun = rand() % 3 - 1;
+	else cdb->data.FlySwim = rand() % 3 - 1;
+
+	cdb->data.Lifespan = 200;
+	cdb->data.EvolutionProgress = rand() % 13 / 10.0;
+
+	//cdb.data.Garden = 1;
+
+	return cdb;
+}
+
 
 ChaoDataBaseGap maxChao(ChaoDataBaseGap cdb) {
 
@@ -226,15 +300,15 @@ ChaoDataBaseGap maxChao(ChaoDataBaseGap cdb) {
 
 	saveChao = cdb;
 
-	saveChao.RunLevel = 99;
-	saveChao.FlyLevel = 99;
-	saveChao.SwimLevel = 99;
-	saveChao.PowerLevel = 99;
+	saveChao.RunLevel = 0;
+	saveChao.FlyLevel = 0;
+	saveChao.SwimLevel = 0;
+	saveChao.PowerLevel = 0;
 	saveChao.StaminaLevel = 99;
-	saveChao.LuckLevel = 99;
+	saveChao.LuckLevel = 0;
 	saveChao.IntelligenceLevel = 99;
 	//saveChao.Happiness = rand() % 201 - 100;
-	saveChao.Type = 2 + (3 * (rand() % 8));
+	//saveChao.Type = 2 + (3 * (rand() % 8));
 	//saveChao.Alignment = rand() % 3 - 1;
 	saveChao.FlyGrade = 5;
 	saveChao.RunGrade = 5;
@@ -250,8 +324,8 @@ ChaoDataBaseGap maxChao(ChaoDataBaseGap cdb) {
 	saveChao.PowerStat = 3600;
 	saveChao.SwimStat = 9999;
 	saveChao.StaminaStat = 65535;
-	saveChao.LuckStat = 3600;
-	saveChao.IntelligenceStat = 3600;
+	saveChao.LuckStat = 3000;
+	saveChao.IntelligenceStat = 3000;
 	//saveChao.PowerRun = rand() % 500 - 250;
 	//saveChao.FlySwim = rand() % 500 - 250;
 	//saveChao.Lifespan = 200;
@@ -282,7 +356,22 @@ ChaoDataBaseGap animalChao(ChaoDataBaseGap cdb) {
 	cdb = saveChao;
 	return saveChao;
 }
+void printChao(RaceBotData c) {
+	string s = "";
+		s  += "somestatthing: ";
+	s += std::to_string(c.someStatThing);
+	s += " stat: " + std::to_string(c.stat);
+	s+= " swim " + std::to_string(c.swim);
+	s+= " s3a " + std::to_string(c.field_3A);
+	s+= " fly " + std::to_string(c.fly);
+	s+= " s3E " + std::to_string(c.field_3E);
+	s+= " run " + std::to_string(c.run);
+	s+= " s42 " + std::to_string(c.field_42);
+	s+= " power " + std::to_string(c.power);
+	s+= " s46 " + std::to_string(c.field_46);
 
+	PrintDebug(s.c_str());
+}
 RaceBotData randomRaceChao(int idx, RaceBotData rChao) {
 	rChao.typeRandom = rand() % 27 + 2;
 	rChao.BallType = rand() % 3;
@@ -295,16 +384,24 @@ RaceBotData randomRaceChao(int idx, RaceBotData rChao) {
 	rChao.ShinyMonotone = rand() % 2;
 	rChao.Medal = rand() % 16;
 	rChao.AlignmentBase = 1.2;
-	rChao.stat *= idx;
-	rChao.swim *= idx;
-	rChao.run *= idx;
-	rChao.fly *= idx;
-	if (rChao.fly > 4000) rChao.fly = 4000;
-	rChao.power *= idx;
-	if (rChao.power > 3600) rChao.power = 3600;
-	rChao.stamina *= idx;
-	rChao.luck = 3600;
-	rChao.intelligence = 3600;
+	//rChao.stat *= idx;
+	//printChao(rChao);
+	if (idx > 0) {
+		if (rChao.someStatThing == 1) {
+			idx *= 100;
+			rChao.swim += idx;
+			rChao.run += idx;
+			rChao.fly += idx;
+			rChao.power += idx;
+		}
+		else {
+			rChao.stat += idx * 100;
+		}
+	}
+	//if (rChao.power > 1000 || rChao.power < 0) rChao.power = 1000;
+	//rChao.stamina *= idx;
+	//rChao.luck = 3000;
+	//rChao.intelligence = 3000;
 	rChao.animalpartRandom = rand() % 8;
 	rChao.eyeRandom = rand() % 14;
 	rChao.mouthRandom = rand() % 16;
@@ -366,7 +463,7 @@ struct_a1R randomKarateChao(int idx,struct_a1R kChao) {
 	kChao.StatPoints[6] = (mul) * 3600 + rand() % 1000;
 	kChao.StatPoints[7] = 0;*/
 
-	for (int i = 0; i < 8; i++) kChao.StatPoints[i] *= idx;
+
 
 	return kChao;
 }

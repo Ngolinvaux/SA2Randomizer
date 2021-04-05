@@ -237,7 +237,7 @@ vector<string> setUpMods(string path) {
 
 unordered_map<string, TwitchChatter> startUpScores(string path) {
 
-	CopyFileA((path + "\\Twitch\\chatCurrency.txt").c_str(), (path + "\\Twitch\\chatCurrencyBACKUP.txt").c_str(), false);
+	//CopyFileA((path + "\\Twitch\\chatCurrency.txt").c_str(), (path + "\\Twitch\\chatCurrencyBACKUP.txt").c_str(), false);
 
 	unordered_map<string, TwitchChatter> m;
 	std::ifstream in;
@@ -369,8 +369,6 @@ void PrintF(float a) {
 	PrintDebug(std::to_string(a).c_str());
 }
 
-
-
 int stageToChar(int stage) {
 	for (int i = 0; i < 9; i++) if (sonicStages[i] == stage) return Characters_Sonic;
 	for (int i = 0; i < 4; i++) if (shadowStages[i] == stage) return Characters_Shadow;
@@ -434,7 +432,10 @@ bool isMech(int i) {
 	if (i == Characters_MechTails || i == Characters_MechEggman || i == (Characters_MechTails | altcharacter) || i == (Characters_MechEggman | altcharacter)) return true;
 	return false;
 }
-
+bool isMechless(int i) {
+	if (i == Characters_Tails || i == Characters_Eggman) return true;
+	return false;
+}
 
 bool isSpeed(int i) {
 	if (i == Characters_Sonic || i == Characters_Shadow || i == (Characters_Sonic | altcharacter) || i == (Characters_Shadow | altcharacter)) return true;
@@ -452,6 +453,7 @@ bool sameType(int i, int r) {
 	if (isHunt(i)) if (isHunt(r)) return true;
 	if (isMech(i)) if (isMech(r)) return true;
 	if (isSpeed(i)) if (isSpeed(r)) return true;
+	if (isMechless(i)) if (isMechless(r)) return true;
 	return false;
 }
 
@@ -460,7 +462,11 @@ boolean isHuntingStage() {
 		return true;
 	return false;
 }
-
+int isHuntingStageInt() {
+	if (CurrentLevel == LevelIDs_MadSpace || CurrentLevel == LevelIDs_SecurityHall || CurrentLevel == LevelIDs_DryLagoon || CurrentLevel == LevelIDs_EggQuarters || CurrentLevel == LevelIDs_WildCanyon || CurrentLevel == LevelIDs_PumpkinHill || CurrentLevel == LevelIDs_AquaticMine || CurrentLevel == LevelIDs_DeathChamber || CurrentLevel == LevelIDs_MeteorHerd)
+		return 1;
+	return 0;
+}
 boolean isHuntingStagei(int CurrentLevel) {
 	if (CurrentLevel == LevelIDs_MadSpace || CurrentLevel == LevelIDs_SecurityHall || CurrentLevel == LevelIDs_DryLagoon || CurrentLevel == LevelIDs_EggQuarters || CurrentLevel == LevelIDs_WildCanyon || CurrentLevel == LevelIDs_PumpkinHill || CurrentLevel == LevelIDs_AquaticMine || CurrentLevel == LevelIDs_DeathChamber || CurrentLevel == LevelIDs_MeteorHerd)
 		return true;
@@ -471,38 +477,86 @@ double dist(NJS_VECTOR a, NJS_VECTOR b) {
 	return(pow(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2), 0.5));
 }
 
-double findClosestMM(int MMID) {
-	double closestMM = 9999999999;
-	double currentMM = 0.0;
+float findClosestMM(int MMID) {
+	float closestMM = 9999;
+	float currentMM = 0.0;
 	for (int i = 0; i < SETObjectCount; i++) {
 		if (SETEntries[i].ID == MMID) {
 			currentMM = dist(MainCharObj1[0]->Position, SETEntries[i].Position);
 			if (currentMM < closestMM) closestMM = currentMM;
 		}
 	}
+	//PrintDebug("end");
 	return closestMM;
 }
 
+bool isBoss() {
+	switch (CurrentLevel) {
+	case LevelIDs_SonicVsShadow1:
+	case LevelIDs_SonicVsShadow2:
+	case LevelIDs_KnucklesVsRouge:
+	case LevelIDs_TailsVsEggman1:
+	case LevelIDs_TailsVsEggman2:
+	case LevelIDs_EggGolemE:
+	case LevelIDs_EggGolemS:
+	case LevelIDs_KingBoomBoo:
+	case LevelIDs_FinalHazard:
+	case LevelIDs_Biolizard:
+	case LevelIDs_BigFoot:
+	case LevelIDs_HotShot:
+	case LevelIDs_FlyingDog:
+			return true;
+			break;
+	}
+
+	return false;
+}
+
+
+int isAttacking() {
+	//PrintInt(MainCharObj1[0]->Action);
+	if ((MainCharObj1[0]->Action == Action_MechlessAttack && !isMech(CurrentCharacter)) ||
+		(isMechless(CurrentCharacter) && MainCharObj1[0]->Action == Action_Jump)||
+
+		MainCharObj1[0]->Action == Action_HomingAttack || MainCharObj1[0]->Action == Action_Somersault1 ||
+		MainCharObj1[0]->Action == Action_Somersault2 || MainCharObj1[0]->Action == Action_SomersaultFinish || MainCharObj1[0]->Action == Action_MovingSomersault1 ||
+		MainCharObj1[0]->Action == Action_MovingSomersault2 || MainCharObj1[0]->Action == Action_BounceDown || MainCharObj1[0]->Action == Action_BounceUp ||
+		MainCharObj1[0]->Action == Action_MovingSomersaultFinish ||
+
+		(MainCharObj1[0]->Action == Action_Jump && !isMech(CurrentCharacter) && !isMechless(CurrentCharacter)) ||
+
+		(isMech(CurrentCharacter) && MenuButtons_Held[0] & Buttons_B) || MainCharObj1[0]->Action == Action_MechPunch ||
+
+
+		MainCharObj1[0]->Action == Action_Punch || MainCharObj1[0]->Action == Action_Punch2 || MainCharObj1[0]->Action == Action_Punch3 || MainCharObj1[0]->Action == Action_Punch1Run ||
+		MainCharObj1[0]->Action == Action_Glide || MainCharObj1[0]->Action == Action_Punch2Run || MainCharObj1[0]->Action == Action_Punch3Run || MainCharObj1[0]->Action == Action_SpiralUpper
+		) {
+		//PrintDebug("Attacking\n");
+		return 1;
+	}
+		
+	return 0;
+}
 
 
 void setUpSuper() {
 
-	WriteData<1>((void*)0x49AB61, 0x66);//232
+	WriteData<1>((void*)0x49AB61, 0x66);//232		call FUN_49ece0
 	WriteData<1>((void*)0x49AB62, 0x90);//122
 	WriteData<1>((void*)0x49AB63, 0x66);//65
 	WriteData<1>((void*)0x49AB64, 0x90);//0
 	WriteData<1>((void*)0x49AB65, 0x90);//0
 
 	WriteData<1>((void*)0x49ADC5, 0x66);//232
-	WriteData<1>((void*)0x49ADC6, 0x90);//22
+	WriteData<1>((void*)0x49ADC6, 0x90);//22	call FUN_49ece0 sahdow
 	WriteData<1>((void*)0x49ADC7, 0x66);//63
 	WriteData<1>((void*)0x49ADC8, 0x90);//0
 	WriteData<1>((void*)0x49ADC9, 0x90);//0
 
-	WriteData<1>((void*)0x49CD64, 0x66);//138
+	WriteData<1>((void*)0x49CD64, 0x66);//138	level complete
 	WriteData<1>((void*)0x49CD65, 0x90);//8
 
-	WriteData<1>((void*)0x49CD6D, 0xEB);//116
+	WriteData<1>((void*)0x49CD6D, 0xEB);//116	
 
 	WriteData<1>((void*)0x6DF2DA, 1);//10
 

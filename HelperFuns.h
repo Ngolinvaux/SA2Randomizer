@@ -18,6 +18,7 @@
 #include "BossTitles.h"
 #include "RankVoices.h"
 
+
 #define altcostume 0x80u
 #define altcharacter 0x40
 #define charmask ~(altcostume|altcharacter)
@@ -38,7 +39,7 @@ TwitchMsg parseChat(string s);
 string lowerCase(string data);
 int returnSameCharLine(int line);
 
-
+int isAttacking();
 int returnMainCharLine(int line);
 int sizeOfArray(int* a);
 int returnSameCharALLGAMELine(int line);
@@ -48,12 +49,15 @@ void PrintInt(int a);
 void PrintF(float a);
 int isIn(int a, int* b,int size);
 bool isMech(int i);
+bool isMechless(int i);
 bool isSpeed(int i);
 bool isHunt(int i);
 bool sameType(int i, int r);
+bool isBoss();
 double dist(NJS_VECTOR a, NJS_VECTOR b);
-double findClosestMM(int MMID);
+float findClosestMM(int MMID);
 boolean isHuntingStage();
+int isHuntingStageInt();
 boolean isHuntingStagei(int CurrentLevel);
 void setUpSuper();
 void fixSuper();

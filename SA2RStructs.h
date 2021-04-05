@@ -30,11 +30,136 @@ struct CreditEntry;
 struct DemoInput;
 
 struct LevelLookupEntry;
-
+struct KnuxMemoryMap;
+struct Emerald;
+struct GlobalMetricStruct;
 typedef void(__cdecl* ObjectFuncPtr)(ObjectMaster*);
+typedef void(__cdecl* ObjectListPtr)(ObjectListEntry*);
+
+
 //SA2R Structs
 // All structs should be packed.
 #pragma pack(push, 1)
+
+
+struct MCO2 {
+	char gap[0xB8];
+	LoopHead* path;
+};
+
+
+
+
+
+struct ef_message_cheat {
+	ObjectMaster* PrevObject;
+	ObjectMaster* NextObject;
+	ObjectMaster* Parent;
+	ObjectMaster* Child;
+	ObjectFuncPtr MainSub;
+	ObjectFuncPtr DisplaySub;
+	ObjectFuncPtr DeleteSub;
+	ObjectFuncPtr field_1C;
+	ObjectFuncPtr field_20;
+	ObjectFuncPtr SomethingSub;
+	ObjectFuncPtr field_28;
+	void* field_2C;
+	SETObjectData* SETData;
+	ef_message_b* ef;
+	UnknownData2* EntityData2;
+	ObjUnknownA* UnknownA_ptr;
+	Data2Ptr Data2;
+	char* Name;
+	char* NameAgain;
+	void* field_4C;
+	
+};
+
+struct __declspec(align(8)) KarateChaoExec_Data2
+{
+	__int16 char0;
+	__int16 isopponent;
+	__int16 flag;
+	__int16 rival;
+	ObjectMaster* pointerToChao;
+	void* currActionInfo;
+	ChaoData* chaoDataPointer;
+	int field_14;
+	NJS_VECTOR* BaseTranslationPos;
+	NJS_VECTOR* HeadTranslationPos;
+	float SwimStat;
+	float FlyStat;
+	float RunStat;
+	float PowerStat;
+	float field_30;
+	float field_34;
+	float zeal;
+	float StaminaStat;
+	float LuckStat;
+	float float44;
+	float field_48;
+};
+
+
+
+struct MechEggmanCharObj2R
+{
+	CharObj2Base base;
+	//char field_1BC[128];
+	char field_1BC[124];
+	NJS_VECTOR laserPos;
+	NJS_VECTOR gunPos;
+	NJS_VECTOR weirdCannonRot;
+	char field_260[120];
+	NJS_VECTOR weirdCannonOffset;
+	NJS_VECTOR gunRot;
+	NJS_VECTOR laserRot;
+	char field_2FC[96]; //first 12 bytes look like another rotation
+	char field_35C;
+	char field_35D;
+	char field_35E;
+	char field_35F;
+	char field_360;
+	char field_361[3];
+	__int16 laserTimer;
+	__int16 stopLockTimer;
+	__int16 numberOfLocks;
+	__int16 numOfTargetsYetToKill; //only counts after release
+	__int16 field_36C;//appears to be the laser balls animation frame or something, default 8, lower works. higher doesnt spawn ball
+	__int16 field_36E;
+	char field_370[4];
+	float field_374;
+	char field_378[8];
+	int field_380;//changes on lockon
+	char field_384[12];
+	NJS_VECTOR lockOnLoc;
+	int field_39C;//lock on rot?
+	char field_3A0[132];
+	int field_424;//interesting rot after shot
+	int UpperBodyRot;//upper body rot
+	int field_42C;//always counts up
+	int field_430;
+	int field_434;
+	NJS_VECTOR something;
+	NJS_TEXLIST* CommonTextureList;
+	NJS_TEXLIST* TextureList;
+	ModelIndex* ModelList;
+	AnimationIndex* MotionList;
+};
+
+
+struct Ai {
+	float a[110];
+};
+
+
+struct GlobalMetricStruct {
+	NJS_VECTOR global_speed;
+	NJS_VECTOR applied_force;
+	int rotX;
+	int rotY;
+	int rotZ;
+};
 
 
 struct ModelCredits {
@@ -50,6 +175,37 @@ struct Fog {
 	float maxDist;
 	float minDist;
 };
+
+struct Emerald {
+	int id;
+	NJS_VECTOR position;
+};
+
+
+struct KnuxMemoryMap {
+	char state;
+	char gap[2];
+	char hintsRead;
+	char veryClose;
+	char emeraldsSpawned;
+	char p1ArrayLen;
+	char p2ArrayLen;
+	char p3ArrayLen;
+	char pEnemyArrayLen;
+	char gap2[2];
+	Emerald u1;
+	Emerald u2;
+	Emerald p1;
+	Emerald p2;
+	Emerald p3;
+	Emerald* p1List;
+	Emerald* p2List;
+	Emerald* p3List;
+	Emerald* pEnemyList;
+	int timer;
+
+};
+
 
 
 struct BlackMarketItems
@@ -234,7 +390,7 @@ struct __declspec(align(4)) RaceBotData
 	float MagnitudeRandomMultiplier;
 	__int16 someStatThing;
 	__int16 field_32;
-	int stat;
+	int stat; 
 	__int16 swim;
 	__int16 field_3A;
 	__int16 fly;
@@ -397,25 +553,6 @@ struct CreditEntry {
 	const char* text;
 };
 
-struct DemoInput
-{
-	int buttons;
-	int buttonsP2;
-	int pressed;
-	int pressedP2;
-	short joyX;
-	short joyXP2;
-	short joyY;
-	short joyYP2;
-	bool stick_pushed;
-	bool stick_pusedP2;
-	bool gap;
-	bool gapP2;
-	int angle;
-	float mag;
-	int angleP2;
-	float magP2;
-};
 
 struct LevelLookupEntry {
 	char entry_type;

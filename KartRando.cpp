@@ -228,6 +228,39 @@ void placeObjects(string savepath,int idx,int length) {
 	writeOBJ(6, 0, 0, 0, 0, 0, 0, 0, 0, 0, bin);
 	for (int i = 0; i < balloons; i++) writeOBJ(0x9, 3, 0, 0,temp->at(length*i/balloons).endPos.x, temp->at(length*i / balloons).endPos.y+25, temp->at(length*i / balloons).endPos.z,70,0,0,bin);
 	bin.close();
+	
+	
+	if (idx < 2) {
+		folder = savepath;
+		if (idx == 0) {
+			folder += "\\gd_PC\\setCartTails_hd.bin";
+			temp = &track;
+		}
+		if (idx == 1) {
+			folder += "\\gd_PC\\setCartRouge_hd.bin";
+			temp = &track280;
+		}
+		std::ofstream bin(folder, std::ios::binary);
+
+		int balloons = std::round(length / 20);
+
+
+		if (idx < 2) writeToBin((unsigned int)3 + balloons, bin);
+		else writeToBin((unsigned int)4 + balloons, bin);
+
+		for (int i = 0; i < 7; i++) writeToBin((unsigned int)0, bin);
+		writeOBJ(4, 0, temp->at(length / 3).yRot, 0, temp->at(length / 3).endPos.x, temp->at(length / 3).endPos.y, temp->at(length / 3).endPos.z, 0, 80, 0, bin);
+
+		writeOBJ(4, 0, temp->at(2 * length / 3).yRot, 0, temp->at(2 * length / 3).endPos.x, temp->at(2 * length / 3).endPos.y, temp->at(2 * length / 3).endPos.z, 0, 80, 0, bin);
+		if (idx > 1)	writeOBJ(4, 0, temp->at(length - 1).yRot, 0, temp->at(length - 1).endPos.x, temp->at(length - 1).endPos.y, temp->at(length - 1).endPos.z, 0, 80, 0, bin);
+
+
+		writeOBJ(6, 0, 0, 0, 0, 0, 0, 0, 0, 0, bin);
+		for (int i = 0; i < balloons; i++) writeOBJ(0x9, 3, 0, 0, temp->at(length * i / balloons).endPos.x, temp->at(length * i / balloons).endPos.y + 25, temp->at(length * i / balloons).endPos.z, 70, 0, 0, bin);
+		bin.close();
+	}
+
+
 }
 
 
@@ -336,8 +369,11 @@ NJS_VECTOR rotatePiece(NJS_VECTOR a, unsigned short rot) {
 	return { newX,a.y,newZ };
 }
 
-void createTrack(int t,string savepath) {
-	int length = rand() % 162 + 100;
+void createTrack(int t,string savepath,int min,int max) {
+	//int length = rand() % 162 + 100;
+	if (min < 30) min = 30;
+	if (max <= min) max = min+1;
+	int length = rand() % (max-min) + min;
 	int current = 0;
 	byte currentPiece;
 
@@ -377,6 +413,23 @@ void createTrack(int t,string savepath) {
 		break;
 	}
 
+	std::ifstream info;
+	vector<int> disabledPieces;
+	info.open((savepath + "\\disableSegments.txt").c_str());
+	if (info.is_open()) {
+		string s;
+		while (info >> s) {
+			disabledPieces.push_back(std::stoi(s, 0, 16));
+			//PrintInt(std::stoi(s,0,16));
+			//PrintDebug(s.c_str());
+		}
+		
+
+		info.close();
+	}
+
+
+
 
 	while (current < length) {
 		if (current < 5) currentPiece = 0x03;
@@ -395,12 +448,17 @@ void createTrack(int t,string savepath) {
 			else currentPiece = 0x01; //straight
 			//if (current == length - 25) PrintInt(totalRot);
 		}
+		else if (current > length - 2 && t > 1) {
+			currentPiece = 0x01;
+		}
 		else {
 			//PrintDebug("Piece:");
 			//PrintInt(currentPiece);
 			//PrintDebug("Array Size:");
 			//PrintInt(getSize(next_map[currentPiece]));
+			byte op = currentPiece;
 			currentPiece = next_map[currentPiece][rand() % getSize(next_map[currentPiece])];
+			while(std::find(disabledPieces.begin(), disabledPieces.end(),currentPiece) != disabledPieces.end()) currentPiece = next_map[op][rand() % getSize(next_map[op])];
 		}
 		{//following stuff
 			//if (t == 4 && current == 122) {

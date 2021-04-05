@@ -21,6 +21,6 @@ int getSize(byte* arr);
 void setTrack(vector<byte> tra, vector<KartSegment> tr, int idx, int length);
 float radiusCalc(NJS_VECTOR a);
 NJS_VECTOR rotatePiece(NJS_VECTOR a, unsigned short rot);
-void createTrack(int t, string savepath);
+void createTrack(int t, string savepath,int min,int max);
 
 #endif
