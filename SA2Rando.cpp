@@ -1454,6 +1454,9 @@ static int __cdecl randVoice(int a) {
 	else if (vlRandoType == 3) r = returnMainCharLine(a);
 	else if (vlRandoType == 4) r = vlBasedOnTime(a,0.2);
 	else if (vlRandoType == 5) r = returnSameCharALLGAMELine(a);
+	else if (vlRandoType == 72 || vlRandoType == 73) {
+		while (lineReferencesMaria(r) || (vlRandoType == 73 && isOmochaoLine(r))) { r = pickFromRange(); }
+	}
 	if ((subNumber == 2) || (subNumber == 1 && GameState == 0)) {
 		int temp = 0;
 		
@@ -1519,6 +1522,9 @@ static int __cdecl randWav(int a) {
 	else if (vlRandoType == 3) r = returnMainCharLine(a);
 	else if (vlRandoType == 4) r = vlBasedOnTime(a, 0.2);
 	else if (vlRandoType == 5) r = returnSameCharALLGAMELine(a);
+	else if (vlRandoType == 72 || vlRandoType == 73) {
+		while (lineReferencesMaria(r) || (vlRandoType == 73 && isOmochaoLine(r))) { r = pickFromRange(); }
+	}
 	if ((subNumber == 2) || (subNumber == 1 && GameState == 0)) {
 		int temp = 0;
 
@@ -5003,6 +5009,8 @@ extern "C"
 		else if(s.compare("mainrand") == 0) vlRandoType = 3;
 		else if (s.compare("time") == 0) vlRandoType = 4;
 		else if (s.compare("sameAll") == 0) vlRandoType = 5;
+		else if (s.compare("saferand") == 0) vlRandoType = 72;
+		else if (s.compare("safeorand") == 0) vlRandoType = 73;
 		showN = settings->getBool("OnOff", "showNames");
 
 
