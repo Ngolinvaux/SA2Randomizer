@@ -44,6 +44,7 @@ int returnMainCharLine(int line);
 int sizeOfArray(int* a);
 int returnSameCharALLGAMELine(int line);
 bool isOmochaoLine(int i);
+bool isMariaLine(int i);
 void PrintPos(NJS_VECTOR a);
 void PrintInt(int a);
 void PrintF(float a);
