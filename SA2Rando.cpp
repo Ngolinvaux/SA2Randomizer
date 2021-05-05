@@ -3192,7 +3192,7 @@ int __cdecl LoadStartPosition_ri(int playerNum, NJS_VECTOR *position, Rotation *
 				break;
 			case Characters_Eggman:
 				list = EggmanStartList;
-				v4->PhysData.InitialJumpSpeed = 2.2;
+				v4->PhysData.JumpSpeed = 2.2;
 				v4->PhysData.HangTime = 10;
 				break;
 			case Characters_MechEggman:
@@ -5790,7 +5790,7 @@ void reactToString(string s) {
 		}
 		else if (s.compare("!jump") == 0) {
 			if (GameState == 16 && MainCharObj2[0]) {
-				MainCharObj2[0]->PhysData.InitialJumpSpeed *= f;
+				MainCharObj2[0]->PhysData.JumpSpeed *= f;
 				MainCharObj2[0]->PhysData.HangTime *= f;
 				currency[msg.user].currency -= cost;
 				sendChat(retMsg);
@@ -6282,7 +6282,7 @@ void reactToFlag() {
 		//AwardSpeedShoes(0);
 		break;
 	case(11):
-		MainCharObj2[0]->PhysData.InitialJumpSpeed *= f;
+		MainCharObj2[0]->PhysData.JumpSpeed *= f;
 		MainCharObj2[0]->PhysData.HangTime *= f;
 		break;
 	case(12):
