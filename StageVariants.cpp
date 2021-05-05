@@ -220,7 +220,7 @@ void stageV(int defaultcharacters[], string savePath) {
 	setStages(defaultcharacters, savePath);
 	for (int q = 0; q < TOTALSTAGEOPTIONS; q++) {
 		char num[2];
-		_itoa(stageOptionT[q], num, 10);
+		itoa(stageOptionT[q], num, 10);
 		copyFileBin(stageOptionS[q], num,savePath);
 	}
 }
