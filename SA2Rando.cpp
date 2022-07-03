@@ -1439,7 +1439,7 @@ void Randomize(int seeda) {
 	if (!disRL)
 	{
 		vector<StoryEntry> storypool;
-		int storylengths[3];
+		int storylengths[3]{ 0,0,0 };
 		vector<StoryEntry> storyends[3];
 		for (int st = 0; st < 3; ++st)
 		{
@@ -1679,7 +1679,7 @@ void Randomize(int seeda) {
 				for (int j = 0; j < 30; j++) {
 					if (m4timers[j].level == i) m4timers[j].min += 1;
 				}
-				if (i == LevelIDs_SecurityHall) SHTimer += 2;
+				if (i == LevelIDs_SecurityHall) WriteData(SHTimer, (const char)(*SHTimer + 2));
 			}
 		}
 		for (int j = 0; j < 30; j++) {
