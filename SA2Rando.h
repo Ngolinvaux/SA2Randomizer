@@ -118,7 +118,7 @@ DataPointer(ChaoDataBaseGap, Chao4Data, 0x019F86D6);
 DataArray(ChaoDataBaseGap, ChaoDataAll, 0x019F6ED6, 24);
 DataArray(ChaoDataBase, ChaoDataAllNoGap, 0x019F6ED6, 24);
 DataArray(M4Timer, m4timers, 0x173B318, 30);
-const char* SHTimer = (const char*)0x4520AB;
+static const char* SHTimer = (const char*)0x4520AB;
 
 DataArray(BlackMarketItems, BlackMarketSlots, 0x1DBEDC0, 32);
 DataPointer(char, M4Centis, 0x173CAD8);
