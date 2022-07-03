@@ -5225,7 +5225,9 @@ int LevelCompCheck() {
 
 __declspec(naked) void FinalHazardFix() {
 	__asm {
+			push ecx
 			call FHCheck
+			pop ecx
 			cmp eax,0x0
 			jz label
 			cmp[ECX], AL
