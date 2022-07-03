@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-#include "D:/Steam/steamapps/common/Sonic Adventure 2/programming/ninja.h"
-#include "D:/Steam/steamapps/common/Sonic Adventure 2/programming/SA2Enums.h"
+#include "ninja.h"
+#include "SA2Enums.h"
 #include <string>
-#include "D:/Steam/steamapps/common/Sonic Adventure 2/programming/MemAccess.h"
-#include "D:/Steam/steamapps/common/Sonic Adventure 2/programming/SA2Structs.h"
+#include "MemAccess.h"
+#include "SA2Structs.h"
 
 
 struct struct_a1R;
@@ -29,7 +29,6 @@ struct CreditEntry;
 
 struct DemoInput;
 
-struct LevelLookupEntry;
 struct KnuxMemoryMap;
 struct Emerald;
 struct GlobalMetricStruct;
@@ -46,7 +45,6 @@ struct MCO2 {
 	char gap[0xB8];
 	LoopHead* path;
 };
-
 
 
 
@@ -551,14 +549,6 @@ struct CreditEntry {
 	float green;
 	float blue;
 	const char* text;
-};
-
-
-struct LevelLookupEntry {
-	char entry_type;
-	char character_id;
-	short level_id;
-	short cutscene_events[4];
 };
 
 #pragma pack(pop)

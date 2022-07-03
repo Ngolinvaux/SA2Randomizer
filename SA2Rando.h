@@ -16,7 +16,7 @@
 #include "SA2RStructs.h"
 #include "SA2RStructs.h"
 #include <Mmsystem.h>
-#include <mciapi.h>
+//#include <mciapi.h>
 #include <filesystem>
 #include <iostream>
 #include <locale>
@@ -101,7 +101,7 @@ DataArray(RaceBotData, ChaoRaceOpponents, 0x011CE2A0, 115);
 DataPointer(char, KartTimer, 0x1D9442C);
 DataArray(KartPtr, tracks, 0xef82bc, 6);
 DataPointer(char, StageSelectLocked, 0x1D1BC02);
-DataPointer(int, CameraMode, 0x1DCFF4C);
+//DataPointer(int, CameraMode, 0x1DCFF4C);
 DataPointer(Fog*, myFogData, 0x1AEFEA4);
 DataPointer(int, CameraFOV, 0x1DCFF40);
 DataPointer(char, LevelComplete, 0x174B002);
@@ -118,7 +118,7 @@ DataPointer(ChaoDataBaseGap, Chao4Data, 0x019F86D6);
 DataArray(ChaoDataBaseGap, ChaoDataAll, 0x019F6ED6, 24);
 DataArray(ChaoDataBase, ChaoDataAllNoGap, 0x019F6ED6, 24);
 DataArray(M4Timer, m4timers, 0x173B318, 30);
-DataPointer(char, SHTimer, 0x4520AB);
+static const char* SHTimer = (const char*)0x4520AB;
 
 DataArray(BlackMarketItems, BlackMarketSlots, 0x1DBEDC0, 32);
 DataPointer(char, M4Centis, 0x173CAD8);
@@ -143,7 +143,6 @@ DataPointer(unsigned int, GravityRotY, 0x1945e08);
 DataPointer(CharObj2Base, Boss2pMaybe, 0x01a51f0c);
 
 DataArray(CreditEntry, Credits, 0x966400, 549);
-DataArray(LevelLookupEntry, Levellist, 0x0173A148, 113);
 
 
 
@@ -156,7 +155,6 @@ DataArray(char, DigTable, 0xa13280, 32);
 
 
 
-#define ObjectFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(ObjectMaster *obj),ADDRESS)
 // SA2R Functions
 
 ObjectFunc(sub_6BE2E0, 0x6BE2E0);

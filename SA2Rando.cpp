@@ -65,7 +65,9 @@ ThiscallFunctionPointer(void, sub_435880, (char*), 0x435880);
 bool enemiesChaos = false;
 bool sadxR = false;
 bool chaoRadar = false;
-bool cutPlace = false;
+int cutPlace = 0;
+int storyMode = 0;
+bool vanillaEnd = false;
 bool crashless = false;
 string modVersion = "";
 bool randModels = false;
@@ -141,7 +143,11 @@ void(__cdecl* MechCharLoadFuncs[])(int) = {
 	LoadDarkChaoWalker
 };
 
-
+bool isMariaLineR(int a) {
+	if ((a >= 353 && a <= 361) || (a >= 647 && a <= 655) || (a >= 689 && a <= 691) || a == 1576) return true;
+	if (isMariaLine(a)) return true;
+	return false;
+}
 
 void makeOtter() {
 	otter->data.BodyType = (SADXBodyType)3;
@@ -554,7 +560,6 @@ int heroonly = 0;
 int bossInPool = 0;
 boolean sehar = false;
 int setCharTime = 0;
-int cutoff; 
 unsigned int seed = time(NULL);
 boolean randomMissions = false;
 int RmissionNum;
@@ -1309,7 +1314,12 @@ void randomizeCurrentM2() {
 	m2Reqs[LevelIDs_CannonsCoreK] = m2Reqs[LevelIDs_CannonsCoreS];
 }
 
-
+DataArray(StoryEntry, HeroStorySequence, 0x173A148, 46);
+DataArray(StoryEntry, DarkStorySequence, 0x173A370, 44);
+DataArray(StoryEntry, LastStorySequence, 0x173A580, 8);
+StoryEntry* Stories[]{ HeroStorySequence, DarkStorySequence, LastStorySequence };
+vector<StoryEntry> HeroStoryNew, DarkStoryNew, LastStoryNew;
+vector<StoryEntry>* StoriesNew[]{ &HeroStoryNew, &DarkStoryNew, &LastStoryNew };
 
 void Randomize(int seeda) {
 
@@ -1425,87 +1435,200 @@ void Randomize(int seeda) {
 	//defaultcharacters[Characters_Knuckles] = Characters_Knuckles + rand() % 2;
 	//defaultcharacters[Characters_Rouge] = Characters_Knuckles + rand() % 2;
 
-
-
-	cutoff = 0;
-	int firstcut = 0;
-
-	for (int j = 0; j < 113; j++) {
-		if (Levellist[j].entry_type == 2 && firstcut == 0) {
-			cutoff = j;
-			if (heroonly == 1) firstcut = 1;
-		}
-	}
-
-	if (bossInPool == 0)cutoff = 98;
-
-	DataArray(LevelLookupEntry, randoMeDaddy, 0x0173A148, cutoff);
-
-	for (int j = 0; j < cutoff; j++) {
-		for (int i = 0; i < 4; i++) {
-			if (randoMeDaddy[j].cutscene_events[i] != -1) validCutscenes.push_back(randoMeDaddy[j].cutscene_events[i]);
-		}
-	}
-
-
-	//LogThis("PreShuffle.txt");
-	if (!disRL) {
-		if (cutPlace) {
-			for (int j = 0; j < cutoff; j++) {
-
-				for (int i = 0; i < 4; i++) {
-					if (randoMeDaddy[j].cutscene_events[i] != -1) validCutscenes.push_back(randoMeDaddy[j].cutscene_events[i]);
+	vector<StoryEntry> allstories;
+	if (!disRL)
+	{
+		vector<StoryEntry> storypool;
+		int storylengths[3]{ 0,0,0 };
+		vector<StoryEntry> storyends[3];
+		for (int st = 0; st < 3; ++st)
+		{
+			for (StoryEntry* ent = Stories[st]; ent->Type != StoryEntryType_End; ++ent)
+				switch (ent->Type)
+				{
+				case StoryEntryType_Event:
+					if (cutPlace == 0)
+						for (int j = 0; j < 4; ++j)
+							if (ent->Events[j] == 210)
+							{
+								for (; j < 4; ++j)
+									if (ent->Events[j] != -1)
+										storyends[st].push_back({ StoryEntryType_Event, 0, 0, ent->Events[j], -1, -1, -1 });
+								break;
+							}
+							else if (ent->Events[j] != -1)
+							{
+								storypool.push_back({ StoryEntryType_Event, 0, 0, ent->Events[j], -1, -1, -1 });
+								++storylengths[st];
+							}
+					break;
+				case StoryEntryType_Level:
+					if (vanillaEnd && storyMode != 2 && ent->Level == LevelIDs_SonicVsShadow2)
+					{
+						storyends[st].push_back(*ent++);
+						storyends[st].push_back(*ent++);
+						storyends[st].push_back(*ent++);
+						storyends[st].push_back(*ent);
+					}
+					else if (vanillaEnd && ent->Level == LevelIDs_FinalHazard)
+					{
+						storyends[st].push_back(*ent++);
+						storyends[st].push_back(*ent);
+					}
+					else if (replaceMadSpace && ent->Level == LevelIDs_MadSpace)
+					{
+						storypool.push_back({ StoryEntryType_Level, Characters_Sonic, LevelIDs_GreenHill });
+						++storylengths[st];
+					}
+					else
+					{
+						bool ignore = false;
+						for (int l : ignoreStages)
+							if (ent->Level == l)
+							{
+								ignore = true;
+								break;
+							}
+						if (!ignore)
+						{
+							storypool.push_back(*ent);
+							++storylengths[st];
+						}
+					}
+					break;
+				case StoryEntryType_Credits:
+					if (storyMode != 2)
+					{
+						storyends[st].push_back(*ent++);
+						storyends[st].push_back(*ent);
+					}
+					else
+						++ent;
+					break;
 				}
+		}
 
+		for (int i = 0; i < storypool.size(); ++i)
+		{
+			int j;
+			do
+			{
+				j = rand() % storypool.size();
+			} while (j == i);
+			std::swap(storypool[i], storypool[j]);
+		}
 
+		StoryEntry* poolptr = storypool.data();
 
-				int spot = rand() % cutoff;
-
-				if (randoMeDaddy[j].entry_type != 2 && randoMeDaddy[j].entry_type != 0 && randoMeDaddy[spot].entry_type != 2 && randoMeDaddy[spot].entry_type != 0 && j != 41 && j != 42 && j != 43 && j != 44 && j != 85 && j != 86 && j != 87 && j != 88 && j != 95 && j != 96 && j != 98 && spot != 41 && spot != 42 && spot != 43 && spot != 44 && spot != 85 && spot != 86 && spot != 87 && spot != 88 && spot != 95 && spot != 96 && spot != 98) {
-					LevelLookupEntry temp = randoMeDaddy[j];
-					randoMeDaddy[j] = randoMeDaddy[spot];
-					randoMeDaddy[spot] = temp;
-				}
-
+		if (cutPlace == 1)
+		{
+			vector<StoryEntry> storypool2;
+			for (int st = 0; st < 3; ++st)
+			{
+				for (StoryEntry* ent = Stories[st]; ent->Type != StoryEntryType_End; ++ent)
+					switch (ent->Type)
+					{
+					case StoryEntryType_Event:
+						for (int j = 0; j < 4; ++j)
+							if (ent->Events[j] == 210)
+								break;
+							else if (ent->Events[j] != -1)
+							{
+								storypool2.push_back({ StoryEntryType_Event, 0, 0, ent->Events[j], -1, -1, -1 });
+								++storylengths[st];
+							}
+						break;
+					case StoryEntryType_Level:
+						if (vanillaEnd && storyMode != 2 && ent->Level == LevelIDs_SonicVsShadow2)
+							ent += 3;
+						else if (vanillaEnd && ent->Level == LevelIDs_FinalHazard)
+							++ent;
+						else
+						{
+							bool ignore = false;
+							for (int l : ignoreStages)
+								if (ent->Level == l)
+								{
+									ignore = true;
+									break;
+								}
+							if (!ignore)
+								storypool2.push_back(*poolptr++);
+						}
+						break;
+					case StoryEntryType_Credits:
+						++ent;
+						break;
+					}
 			}
+			storypool = storypool2;
+			poolptr = storypool.data();
 		}
-		else {
 
-
-			for (int j = 0; j < cutoff; j++) {
-
-				for (int i = 0; i < 4; i++) {
-					if (randoMeDaddy[j].cutscene_events[i] != -1) validCutscenes.push_back(randoMeDaddy[j].cutscene_events[i]);
-				}
-
-
-
-				int spot = rand() % cutoff;
-
-				if (randoMeDaddy[j].entry_type != 2 && randoMeDaddy[spot].entry_type != 2 && j != 41 && j != 42 && j != 43 && j != 44 && j != 85 && j != 86 && j != 87 && j != 88 && j != 95 && j != 96 && j != 98 && spot != 41 && spot != 42 && spot != 43 && spot != 44 && spot != 85 && spot != 86 && spot != 87 && spot != 88 && spot != 95 && spot != 96 && spot != 98) {
-					LevelLookupEntry temp = randoMeDaddy[j];
-					randoMeDaddy[j] = randoMeDaddy[spot];
-					randoMeDaddy[spot] = temp;
-				}
-				//if (randoMeDaddy[j].entry_type == 1)
-					//for (int i = 0; i < 4; i++)
-						//randoMeDaddy[j].cutscene_events[i] = -1;
-			}
-
-			//sehar = settings->getBool("OnOff", "setchars");
-			//boolean sehar = false;
+		switch (storyMode)
+		{
+		case 1:
+		{
+			int rem = storypool.size();
+			storylengths[0] = rand() % (rem - 2);
+			rem -= storylengths[0];
+			storylengths[1] = rand() % (rem - 1);
+			rem -= storylengths[1];
+			storylengths[2] = rem;
 		}
+		break;
+		case 2:
+			storylengths[0] = 0;
+			storylengths[1] = 0;
+			storylengths[2] = storypool.size();
+			break;
+		}
+
+		for (int i = 0; i < 3; ++i)
+		{
+			for (size_t j = 0; j < storylengths[i]; j++)
+				StoriesNew[i]->push_back(*poolptr++);
+			for (StoryEntry& ent : storyends[i])
+				StoriesNew[i]->push_back(ent);
+			StoriesNew[i]->push_back({ StoryEntryType_End });
+		}
+
+		if (storyMode == 2)
+		{
+			HeroStoryNew = LastStoryNew;
+			DarkStoryNew = LastStoryNew;
+			allstories = LastStoryNew;
+		}
+		else
+		{
+			allstories.reserve(HeroStoryNew.size() + DarkStoryNew.size() + LastStoryNew.size());
+			StoryEntry* ptr = allstories.data();
+			memcpy(ptr, HeroStoryNew.data(), sizeof(StoryEntry)* HeroStoryNew.size());
+			ptr += HeroStoryNew.size();
+			memcpy(ptr, DarkStoryNew.data(), sizeof(StoryEntry)* DarkStoryNew.size());
+			ptr += DarkStoryNew.size();
+			memcpy(ptr, LastStoryNew.data(), sizeof(StoryEntry)* LastStoryNew.size());
+		}
+		WriteData((StoryEntry**)0x4586C5, HeroStoryNew.data());
+		WriteData((StoryEntry**)0x4586E6, DarkStoryNew.data());
+		WriteData((StoryEntry**)0x458707, LastStoryNew.data());
 	}
-
-	if (replaceMadSpace) {
-		for (int j = 0; j < cutoff; j++) {
-			if (randoMeDaddy[j].level_id == LevelIDs_MadSpace && randoMeDaddy[j].entry_type == 1) {
-				randoMeDaddy[j].level_id = LevelIDs_GreenHill;
-				randoMeDaddy[j].character_id = Characters_Sonic;
-			}
-		}
+	else
+	{
+		HeroStoryNew.reserve(HeroStorySequence_Length);
+		memcpy(HeroStoryNew.data(), HeroStorySequence, sizeof(StoryEntry)* HeroStorySequence_Length);
+		DarkStoryNew.reserve(DarkStorySequence_Length);
+		memcpy(DarkStoryNew.data(), DarkStorySequence, sizeof(StoryEntry)* DarkStorySequence_Length);
+		LastStoryNew.reserve(LastStorySequence_Length);
+		memcpy(LastStoryNew.data(), LastStorySequence, sizeof(StoryEntry)* LastStorySequence_Length);
+		allstories.reserve(HeroStoryNew.size() + DarkStoryNew.size() + LastStoryNew.size());
+		StoryEntry* ptr = allstories.data();
+		memcpy(ptr, HeroStoryNew.data(), sizeof(StoryEntry)* HeroStoryNew.size());
+		ptr += HeroStoryNew.size();
+		memcpy(ptr, DarkStoryNew.data(), sizeof(StoryEntry)* DarkStoryNew.size());
+		ptr += DarkStoryNew.size();
+		memcpy(ptr, LastStoryNew.data(), sizeof(StoryEntry)* LastStoryNew.size());
 	}
-	//randoMeDaddy[0] = randoMeDaddy[87];
 
 		if (sehar) {
 			for (int i = 0; i < Characters_Amy; i++) {
@@ -1552,21 +1675,6 @@ void Randomize(int seeda) {
 		WriteData<int>(&MHTimer4, timer);
 		WriteData<int>(&MHTimerMinus660, timer-660);
 
-		for (int j = 0; j < cutoff; j++) {
-			for (int i = 0; i < ignoreStages.size(); i++) {
-				if (randoMeDaddy[j].level_id == ignoreStages[i]) {
-					randoMeDaddy[j].character_id = 0;
-					randoMeDaddy[j].cutscene_events[0] = validCutscenes[rand()%validCutscenes.size()];
-					if (randoMeDaddy[j].cutscene_events[0] == 210)randoMeDaddy[j].cutscene_events[0] = 208;
-					randoMeDaddy[j].cutscene_events[1] = -1;
-					randoMeDaddy[j].cutscene_events[2] = -1;
-					randoMeDaddy[j].cutscene_events[3] = -1;
-					randoMeDaddy[j].entry_type = 0;
-					randoMeDaddy[j].level_id = 0;
-				}
-			}
-		}
-
 		for (int i = 0; i < 44; i++) {
 
 			if (isHuntingStagei(i)) {
@@ -1578,7 +1686,7 @@ void Randomize(int seeda) {
 				for (int j = 0; j < 30; j++) {
 					if (m4timers[j].level == i) m4timers[j].min += 1;
 				}
-				if (i == LevelIDs_SecurityHall) SHTimer += 2;
+				if (i == LevelIDs_SecurityHall) WriteData(SHTimer, (const char)(*SHTimer + 2));
 			}
 		}
 		for (int j = 0; j < 30; j++) {
@@ -1588,13 +1696,13 @@ void Randomize(int seeda) {
 		setUpScores();
 
 		if(story.compare("Hero") == 0)
-			createSplits(0,45, "Hero Story",showN);
+			createSplits(HeroStoryNew, "Hero Story",showN);
 		if (story.compare("Dark") == 0)
-			createSplits(46, 89, "Dark Story",showN);
+			createSplits(DarkStoryNew, "Dark Story",showN);
 		if (story.compare("All") == 0)
-			createSplits(0, 98, "All Stories", showN);
+			createSplits(allstories, "All Stories", showN);
 		if (story.compare("173") == 0)
-			createSplits(0, 98, "173 Emblems", showN);
+			createSplits(allstories, "173 Emblems", showN);
 
 		/*
 		//Sonic V Shadow 1
@@ -1626,6 +1734,10 @@ void Randomize(int seeda) {
 }
 
 ObjectMaster* __cdecl HatchHook(ChaoData* chaoData, int a2, void* a3, NJS_VECTOR* position, Angle angle) {
+
+
+	if(rChao) return CreateChao(chaoData, a2, a3, position, angle);
+
 
 	//Index
 	int idx = -1;
@@ -1937,6 +2049,10 @@ static int __cdecl randVoice(int a) {
 	else if (vlRandoType == 1) {
 		while (isOmochaoLine(r)) { r = pickFromRange(); }
 		//return r;
+	}	
+	else if (vlRandoType == 9) {
+		while (isMariaLineR(r)) { r = pickFromRange(); }
+		//return r;
 	}
 	else if (vlRandoType == 2) r = returnSameCharLine(a);
 	else if (vlRandoType == 3) r = returnMainCharLine(a);
@@ -2004,6 +2120,10 @@ static int __cdecl randWav(int a) {
 		while (isOmochaoLine(r)) { r = rand() % totalWavFiles; }
 		//return r;
 	}
+	else if (vlRandoType == 9) {
+		while (isMariaLineR(r)) { r = pickFromRange(); }
+		//return r;
+	}
 	else if (vlRandoType == 2) r = returnSameCharLine(a);
 	else if (vlRandoType == 3) r = returnMainCharLine(a);
 	else if (vlRandoType == 4) r = vlBasedOnTime(a, 0.2);
@@ -2058,6 +2178,7 @@ boolean is2PChar() {
 
 void __cdecl LoadCharacters_r()
 {
+	
 	pickColor();
 	if(emeraldColorSet) setEColor(emRed, emGreen, emBlue);
 	int vanillaChar = CurrentCharacter;
@@ -2094,7 +2215,7 @@ void __cdecl LoadCharacters_r()
 			seed = rand();
 			Randomize(seed);
 			if (rkart) randomizeKartStats();
-			if (true) LogThis("LevelLists.txt",seed,cutoff);
+			if (true) LogThis("LevelLists.txt",seed,StoriesNew);
 		}
 		if ((CurrentCharacter & ~1) == Characters_MechTails)
 			CurrentCharacter -= Characters_MechTails - Characters_Tails;
@@ -2531,7 +2652,7 @@ LoopStart:
 		case LevelIDs_MadSpace:
 			if (noVanillaChars) {
 				if (CurrentCharacter == Characters_Sonic || CurrentCharacter == Characters_MechTails || CurrentCharacter == Characters_SuperSonic) *character = Characters_Knuckles;
-				if (CurrentCharacter == Characters_Shadow || CurrentCharacter == Characters_MechEggman) *character = Characters_Rouge;
+				if (CurrentCharacter == Characters_Shadow || CurrentCharacter == Characters_MechEggman || isMechless(CurrentCharacter)) *character = Characters_Rouge;
 			}
 			if (!noVanillaChars) {
 				*character = Characters_Knuckles;
@@ -2793,8 +2914,8 @@ end:
 	if (CurrentLevel == 66 && false) {	//this 
 
 		LastBossPlayerManager_Load();
-		MainCharacter[0]->SomethingSub = Super_Something;
-		MainCharacter[1]->SomethingSub = Super_Something;
+		//MainCharacter[0]->SomethingSub = Super_Something;
+		//MainCharacter[1]->SomethingSub = Super_Something;
 		MainCharObj1[0]->Action = 0;
 		MainCharObj1[0]->NextAction = 0;
 		MainCharObj1[1]->Action = 0;
@@ -2945,7 +3066,7 @@ StartPosition MechEggmanStart[] = {
 
 StartPosition MechTailsStart[] = {
 	{ LevelIDs_BasicTest },		
-    //{ LevelIDs_SkyRail, 0x4000, 0x4000, 0x4000, {20,-1000,1520}, {20,-1000,1520}, {20,-1000,1520} },
+	//{ LevelIDs_SkyRail, 0x4000, 0x4000, 0x4000, {20,-1000,1520}, {20,-1000,1520}, {20,-1000,1520} },
 	{ LevelIDs_PrisonLane, 0x8000u, 0x8000u, 0x8000u, { 115, 10, 4 }, { 115, 10, 4 }, { 115, 10, 4 } },
 	{ LevelIDs_WeaponsBed, 0xC000u, 0xC000u, 0xC000u, { 0 }, { 10, 0, 0 }, { -10, 0, 0 } },
 	{ LevelIDs_WeaponsBed2P, 0xC000u, 0xC000u, 0x4000, { 50, -170, 50 }, { 20, -170, 95 }, { 20, -170, -95 } },
@@ -5111,7 +5232,9 @@ int LevelCompCheck() {
 
 __declspec(naked) void FinalHazardFix() {
 	__asm {
+			push ecx
 			call FHCheck
+			pop ecx
 			cmp eax,0x0
 			jz label
 			cmp[ECX], AL
@@ -6739,6 +6862,7 @@ extern "C"
 		else if(s.compare("mainrand") == 0) vlRandoType = 3;
 		else if (s.compare("time") == 0) vlRandoType = 4;
 		else if (s.compare("sameAll") == 0) vlRandoType = 5;
+		else if (s.compare("maria") == 0) vlRandoType = 9;
 		showN = settings->getBool("OnOff", "showNames");
 
 
@@ -6970,7 +7094,17 @@ extern "C"
 
 		//inplaceCut = settings->getBool("OnOff", "cuts");
 		disRL = settings->getBool("rando", "disRandL");
-		cutPlace = settings->getBool("rando", "cutPlace");
+		auto cutplstr = settings->getString("rando", "cutPlace");
+		if (!cutplstr.compare("inplace"))
+			cutPlace = 1;
+		else if (!cutplstr.compare("exclude"))
+			cutPlace = 2;
+		auto storymdstr = settings->getString("rando", "storyMode");
+		if (!storymdstr.compare("random"))
+			storyMode = 1;
+		else if (!storymdstr.compare("single"))
+			storyMode = 2;
+		vanillaEnd = settings->getBool("rando", "vanillaEnd");
 		replaceMadSpace = settings->getBool("OnOff", "madSwap");
 		if (settings->getBool("OnOff", "sadxRadar")) {
 			WriteData<1>((void*)0x0073A7BE, 0x0F);
@@ -7013,7 +7147,7 @@ extern "C"
 
 		}//Upgrade Model Stuff
 
-		if (true) LogThis("LevelLists.txt",seed,cutoff);
+		if (true) LogThis("LevelLists.txt",seed,StoriesNew);
 		logThisV = settings->getBool("OnOff", "llg");
 		//boolean logs = false;
 

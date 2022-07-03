@@ -3,6 +3,6 @@
 #include "HelperFuns.h"
 
 
-void randomizeEnemies(string savePath, int stage, bool chao, bool enemies);
+NJS_VECTOR randomizeEnemies(string savePath, int stage, bool chao, bool enemies, bool chaos);
 
 #endif

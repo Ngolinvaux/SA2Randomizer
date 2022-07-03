@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Animations.h"
-#include "Trampoline.cpp"
+#include "Trampoline.h"
 #include "Windows.h"
 
 
@@ -260,7 +260,8 @@ void goingDown() {
 	{
 		njRotateY((float*)v21, -MainCharObj1[0]->Rotation.y);
 	}
-	njCalcPoint(&result, &result, v21);
+	//njCalcPoint(&result, &result, v21);
+	njCalcPoint(v21,&result, &result,1);
 	v39 = fabs(MainCharObj2[0]->Speed.y);
 	if (MainCharObj2[0]->Speed.x < 0.0)
 	{
@@ -354,7 +355,7 @@ float* sub_468E70(EntityData1* a1, NJS_VECTOR* a2)
 }
 
 
-signed int SetHandGrinding(EntityData2* data2, CharObj2Base* co2Miles, CharObj2Base* co2, EntityData1* data1) {
+void SetHandGrinding(EntityData2* data2, CharObj2Base* co2Miles, CharObj2Base* co2, EntityData1* data1) {
 
 	//void* v26 = *(void**)co2Miles->field_1BC[16];
 	//float v40 = co2Miles->field_3BC[4];
@@ -1003,7 +1004,7 @@ void collideWithObj()
 			break;
 		case 0x769C30:// lc
 		case 0x714610: // hb dynamite
-			getCollidingObj()->Data1.Entity->field_6 = 0;
+			getCollidingObj()->Data1.Entity->Timer = 0;
 			getCollidingObj()->Data1.Entity->NextAction = 7;
 			break;
 		case 7409856: //hb red things

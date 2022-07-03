@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F6B472E4-3BF0-4AFB-8B66-ED64E267ADF4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SA2CharSel</RootNamespace>
+    <ProjectName>SA2Rando</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>.\bin\</OutDir>
+    <TargetName>Rando</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>Rando</TargetName>
+    <EmbedManifest>true</EmbedManifest>
+    <OutDir>.\bin\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CHARSEL2_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CHARSEL2_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <ManifestFile>$(IntDir)mod.manifest</ManifestFile>
+    </Link>
+    <Manifest>
+      <OutputManifestFile>
+      </OutputManifestFile>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AnimationFile.h" />
+    <ClInclude Include="Animations.h" />
+    <ClInclude Include="BossTitles.h" />
+    <ClInclude Include="ChaoRando.h" />
+    <ClInclude Include="Coloring.h" />
+    <ClInclude Include="EnemyRandomizer.h" />
+    <ClInclude Include="FogRando.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="KartModels.h" />
+    <ClInclude Include="LandTableInfo.h" />
+    <ClInclude Include="MemAccess.h" />
+    <ClInclude Include="ModelInfo.h" />
+    <ClInclude Include="ModelSwap.h" />
+    <ClInclude Include="ninja.h" />
+    <ClInclude Include="njdef.h" />
+    <ClInclude Include="RankVoices.h" />
+    <ClInclude Include="SA2Enums.h" />
+    <ClInclude Include="SA2Functions.h" />
+    <ClInclude Include="SA2ModInfo.h" />
+    <ClInclude Include="SA2ModLoader.h" />
+    <ClInclude Include="SA2Rando.h" />
+    <ClInclude Include="HelperFuns.h" />
+    <ClInclude Include="IniFile.h" />
+    <ClInclude Include="KartRando.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SA2RStructs.h" />
+    <ClInclude Include="SA2Structs.h" />
+    <ClInclude Include="SA2Variables.h" />
+    <ClInclude Include="StageVariants.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Subtitles.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Trampoline.h" />
+    <ClInclude Include="TwitchIRC.h" />
+    <ClInclude Include="UsercallFunctionHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AnimationFile.cpp" />
+    <ClCompile Include="Animations.cpp" />
+    <ClCompile Include="BossTitles.cpp" />
+    <ClCompile Include="ChaoRando.cpp" />
+    <ClCompile Include="Coloring.cpp" />
+    <ClCompile Include="EnemyRandomizer.cpp" />
+    <ClCompile Include="FogRando.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="HelperFuns.cpp" />
+    <ClCompile Include="KartModels.cpp" />
+    <ClCompile Include="KartRando.cpp" />
+    <ClCompile Include="LandTableInfo.cpp" />
+    <ClCompile Include="ModelInfo.cpp" />
+    <ClCompile Include="ModelSwap.cpp" />
+    <ClCompile Include="RankVoices.cpp" />
+    <ClCompile Include="SA2Rando.cpp" />
+    <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="StageVariants.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="Subtitles.cpp" />
+    <ClCompile Include="Trampoline.cpp" />
+    <ClCompile Include="TwitchIRC.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SA2Rando.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

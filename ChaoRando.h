@@ -10,4 +10,5 @@ ChaoDataBaseGap animalChao(ChaoDataBaseGap cdb);
 ChaoDataBaseGap maxChao(ChaoDataBaseGap cdb);
 struct_a1R randomKarateChao(int idx, struct_a1R kChao);
 RaceBotData randomRaceChao(int idx, RaceBotData rChao);
+ChaoData* randomizeCarriedChao(ChaoData* cdb);
 #endif

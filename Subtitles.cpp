@@ -15,15 +15,18 @@ vector<SubtitleQueue>  formatStr(string s, int charLineLimit,int a) {
 	int boxes = 0;
 	int lastTime = FrameCount;
 	SubtitleQueue sq;
+
 	for (int i = 0; i < s.size(); i++) {
 		if (j > charLineLimit - 2) {
 			if (s.at(i) == ' ') {
 				lines++;
 				if (lines == 2) {
 					sq.text = "\t"+s.substr(subStart, i - subStart + 1);
-					sq.time = lastTime + timeOfVl(sq.text,a)+60;
+					//sq.time = lastTime + timeOfVl(sq.text,a)+60;
+					//sq.time = lastTime + timeOfVl(sq.text,a);
+					sq.time = lastTime ;
 					sq.ogID = a;
-					lastTime = sq.time;
+					lastTime = sq.time + timeOfVl(sq.text, a);
 					subStart = i + 1;
 					boxes++;
 					queue.push_back(sq);
@@ -38,9 +41,11 @@ vector<SubtitleQueue>  formatStr(string s, int charLineLimit,int a) {
 		}
 		j++;
 	}
-
+	
 	sq.text = "\t" + s.substr(subStart, s.size() - subStart + 1);
-	sq.time = FrameCount + timeOfVl(sq.text,a);
+	//sq.time = FrameCount + timeOfVl(sq.text,a);
+	//sq.time = lastTime + timeOfVl(sq.text,a);
+	sq.time = lastTime;
 	sq.ogID = a;
 	queue.push_back(sq);
 	while (!queue.empty()) {

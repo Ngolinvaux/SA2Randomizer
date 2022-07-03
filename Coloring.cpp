@@ -35,7 +35,7 @@ void setColor() {
 		
 		constMaterial = color;
 		if (isHuntingStage()) {
-			njControl3D_Add(0x10);
+			OnControl3D(0x10);
 			increment += 0.000008;
 
 		}
@@ -64,7 +64,7 @@ void setColor() {
 }
 
 void resetColor() {
-	njControl3D_Remove(0x10);
+	OffControl3D(0x10);
 	//PrintDebug("resret");
 	
 }
