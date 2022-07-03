@@ -1509,7 +1509,14 @@ void Randomize(int seeda) {
 		}
 
 		for (int i = 0; i < storypool.size(); ++i)
-			std::swap(storypool[i], storypool[rand() % storypool.size()]);
+		{
+			int j;
+			do
+			{
+				j = rand() % storypool.size();
+			} while (j == i);
+			std::swap(storypool[i], storypool[j]);
+		}
 
 		StoryEntry* poolptr = storypool.data();
 
