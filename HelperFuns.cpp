@@ -208,30 +208,21 @@ TwitchChatter UpdateCurrency(TwitchChatter tc, vector<int> rates) {
 
 vector<int> setUpRates(string path) {
 	vector<int> v;
-	std::ifstream in;
-	in.open((path + "\\Twitch\\currencyRates.txt").c_str());
-	string command;
-	int cost;
-	while (in >> command) {
-		in >> cost;
-		v.push_back(cost);
-	}
-
-	in.close();
+	v.push_back(200); //Afk time
+	v.push_back(20); //update time (Seconds)
+	v.push_back(1); //currency per update
+	v.push_back(5); //kinda useless ngl
+	v.push_back(100); //new user points
+	v.push_back(2); //points per bit
 	return v;
 }
 
 vector<string> setUpMods(string path) {
 	vector<string> v;
-	std::ifstream in;
-	in.open((path + "\\Twitch\\moderators.txt").c_str());
-	string command;
-	int cost;
-	while (in >> command) {
-		v.push_back(lowerCase(command));
-	}
+	v.push_back("exant");
+	v.push_back("prahaha");
+	v.push_back("prabot");
 
-	in.close();
 	return v;
 }
 
@@ -261,16 +252,11 @@ unordered_map<string, TwitchChatter> startUpScores(string path) {
 
 unordered_map<string, int> GetCommandCosts(string path) {
 	unordered_map<string, int> commandCosts;
-	std::ifstream in;
-	in.open((path + "\\Twitch\\commandCosts.txt").c_str());
-	string command;
-	int cost;
-	while (in >> command) {
-		in >> cost;
-		commandCosts[command] = cost;
+	vector<string> commands = {"!animal","!food","!buy"};
+	vector<int> costs = {0,0,0};
+	for (int i = 0; i < commands.size();i++) {
+		commandCosts[commands[i]] = costs[i];
 	}
-
-	in.close();
 	return commandCosts;
 }
 
@@ -307,6 +293,11 @@ int sizeOfArray(int* arr) {
 
 bool isOmochaoLine(int line) {
 	for (int i = 0; i < sizeOfArray(OmochaoLines); i++)  if (line == OmochaoLines[i]) return true;
+	return false;
+}
+
+bool isMariaLine(int line) {
+	for (int i = 0; i < sizeOfArray(MariaLines); i++)  if (line == MariaLines[i]) return true;
 	return false;
 }
 
@@ -381,7 +372,7 @@ int stageToChar(int stage) {
 
 
 
-void LogThis(std::string file, int seed, int cutoff) {
+void LogThis(std::string file, int seed, vector<StoryEntry>** stories) {
 	std::ofstream myfile(file);
 	//myfile.open("LevelLists.txt");
 
@@ -389,32 +380,44 @@ void LogThis(std::string file, int seed, int cutoff) {
 	char Swaps[Characters_Amy][20] = { "Amy","Metal Sonic","dead","dead","Tikal","Choas","Chao Walker","Dark Chao Walker" };
 	myfile << "Seed: " << (int)seed << "\n\n";
 
-	for (int j = 0; j < cutoff + 1; j++) {
-		if (j == 0) myfile << "Hero Story\n\n";
-		if (j == 47) myfile << "Dark Story\n\n";
-		if (j == 91) myfile << "Last Story\n\n";
-		switch (Levellist[j].entry_type) {
+	int j = 0;
+
+	for (int i = 0; i < 3; i++)
+	{
+		switch (i)
+		{
 		case 0:
-			myfile << j << ": Entry Type: Cutscene \n\t";
+			myfile << "Hero Story\n\n";
 			break;
 		case 1:
-			myfile << j << ":Entry Type: Level \n\t";
+			myfile << "Dark Story\n\n";
 			break;
 		case 2:
-			myfile << j << ":Entry Type: End \n\t";
-			break;
-		case 3:
-			myfile << j << ":Entry Type: Credits\n\t";
+			myfile << "Last Story\n\n";
 			break;
 		}
-
-		myfile << "Character: ";
-		if (Levellist[j].character_id & altcharacter) myfile << Swaps[Levellist[j].character_id] << "\n\t";
-		else  myfile << Chars[Levellist[j].character_id] << "\n\t";
-		myfile << "Level id: " << Levellist[j].level_id << "\n\t";
-		for (int x = 0; x < 4; x++)
-			myfile << "Cutscene Data: " << Levellist[j].cutscene_events[x] << ", ";
-		myfile << "\n\n";
+		for (StoryEntry* ent = stories[i]->data(); ent->Type != StoryEntryType_End; ++ent) {
+			
+			switch (ent->Type) {
+			case StoryEntryType_Event:
+				myfile << j << ": Entry Type: Cutscene \n\t";
+				break;
+			case StoryEntryType_Level:
+				myfile << j << ":Entry Type: Level \n\t";
+				break;
+			case StoryEntryType_Credits:
+				myfile << j << ":Entry Type: Credits\n\t";
+				break;
+			}
+			++j;
+			myfile << "Character: ";
+			if (ent->Character & altcharacter) myfile << Swaps[ent->Character] << "\n\t";
+			else  myfile << Chars[ent->Character] << "\n\t";
+			myfile << "Level id: " << ent->Level << "\n\t";
+			for (int x = 0; x < 4; x++)
+				myfile << "Cutscene Data: " << ent->Events[x] << ", ";
+			myfile << "\n\n";
+		}
 	}
 	myfile.flush();
 	myfile.close();
@@ -704,7 +707,7 @@ std::string stageNumToName(int num) {
 
 
 
-void createSplits(int start, int end, std::string category, bool showN) {
+void createSplits(vector<StoryEntry>& stages, std::string category, bool showN) {
 	std::ofstream myfile("RandomizerSplits.lss");
 	//Header
 	myfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -717,16 +720,16 @@ void createSplits(int start, int end, std::string category, bool showN) {
 	myfile << "<AttemptHistory />\n<Segments>\n";
 
 	//
-	for (int i = start; i <= end; i++) {
-		if (Levellist[i].entry_type == 1) {
-			if (Levellist[i].level_id == LevelIDs_CannonsCoreT) {
+	for (StoryEntry &ent : stages) {
+		if (ent.Type == StoryEntryType_Level) {
+			if (ent.Level == LevelIDs_CannonsCoreT) {
 				for (int j = 0; j < 5; j++) {
 					myfile << "<Segment>\n";
 					myfile << "<Name>";
 					if (showN)
-						myfile << stageNumToName(Levellist[i].level_id) << " " << j;
+						myfile << stageNumToName(ent.Level) << " " << j;
 					else
-						myfile << "Stage: " << Levellist[i].level_id << " " << j;
+						myfile << "Stage: " << ent.Level << " " << j;
 					myfile << "</Name>\n";
 					myfile << "<Icon />\n";
 					myfile << "<SplitTimes>\n<SplitTime name=\"Personal Best\" />\n</SplitTimes>\n<BestSegmentTime />\n<SegmentHistory />";
@@ -738,9 +741,9 @@ void createSplits(int start, int end, std::string category, bool showN) {
 				myfile << "<Segment>\n";
 				myfile << "<Name>";
 				if (showN)
-					myfile << stageNumToName(Levellist[i].level_id);
+					myfile << stageNumToName(ent.Level);
 				else
-					myfile << "Stage: " << Levellist[i].level_id;
+					myfile << "Stage: " << ent.Level;
 				myfile << "</Name>\n";
 				myfile << "<Icon />\n";
 				myfile << "<SplitTimes>\n<SplitTime name=\"Personal Best\" />\n</SplitTimes>\n<BestSegmentTime />\n<SegmentHistory />";
