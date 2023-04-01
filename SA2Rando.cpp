@@ -72,6 +72,7 @@ bool skipFMV = false;
 bool crashless = false;
 string modVersion = "";
 bool randModels = false;
+bool hideLevChar = false;
 vector<ModelCredits> modelCreds;
 HelperFunctions hf;
 vector<short> validCutscenes;
@@ -4648,7 +4649,9 @@ void LoadTitleCardTextures()
 	char *v15; // esi@19
 	char filename[24]; // [sp+Ch] [bp-20h]@27
 
-	if ( TwoPlayerMode || CurrentLevel == LevelIDs_Route101280 )
+	if (hideLevChar)
+		v15 = "XX";
+	else if ( TwoPlayerMode || CurrentLevel == LevelIDs_Route101280 )
 	{
 		switch ( CurrentCharacter )
 		{
@@ -7209,6 +7212,14 @@ extern "C"
 
 		if (settings->getBool("OnOffDEV", "fastLoad")) WriteData<1>((void*)0x43A889, 0x03);
 		randModels = settings->getBool("OnOffDEV", "randMod",true);
+		if (settings->getBool("OnOffDEV", "hideLevName", false))
+		{
+			WriteData((const char**)0x472934, "XX");
+			WriteData((const char**)0x47295F, "XX");
+			WriteData((const char**)0x47297C, "XX");
+			WriteData((const char**)0x472990, "XX");
+		}
+		hideLevChar = settings->getBool("OnOffDEV", "hideLevChar", false);
 		disKill = settings->getBool("OnOffDEV", "disKill");
 		if (disKill) WriteData<1>((void*)0x46AD50, 0xC3);
 		
