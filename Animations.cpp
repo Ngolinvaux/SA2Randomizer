@@ -1113,8 +1113,7 @@ static void __declspec(naked) superToSonic() {
 }*/
 
 bool canlockOn() {
-	if (CurrentLevel == LevelIDs_BigFoot || CurrentLevel == LevelIDs_HotShot || CurrentLevel == LevelIDs_FlyingDog) return false;
-	return true;
+	return CurrentLevel != LevelIDs_BigFoot && CurrentLevel != LevelIDs_HotShot && CurrentLevel != LevelIDs_FlyingDog;
 }
 
 
@@ -1123,6 +1122,7 @@ static void __declspec(naked) canLockOn() {
 	__asm {
 		pushad
 		call canlockOn
+		test eax,eax
 		popad
 
 		push 0x74186d

@@ -68,9 +68,11 @@ bool chaoRadar = false;
 int cutPlace = 0;
 int storyMode = 0;
 bool vanillaEnd = false;
+bool skipFMV = false;
 bool crashless = false;
 string modVersion = "";
 bool randModels = false;
+bool hideLevChar = false;
 vector<ModelCredits> modelCreds;
 HelperFunctions hf;
 vector<short> validCutscenes;
@@ -104,7 +106,19 @@ int emRed = 0;
 int emGreen = 0;
 int emBlue = 0;
 
+enum cutPlaces
+{
+	cutPlaces_Random,
+	cutPlaces_Vanilla,
+	cutPlaces_None
+};
 
+enum storyModes
+{
+	storyModes_Vanilla,
+	storyModes_Random,
+	storyModes_Combined
+};
 
 void(__cdecl* CharLoadFuncs[])(int) = {
 	LoadSonic,
@@ -1447,7 +1461,7 @@ void Randomize(int seeda) {
 				switch (ent->Type)
 				{
 				case StoryEntryType_Event:
-					if (cutPlace == 0)
+					if (cutPlace == cutPlaces_Random)
 						for (int j = 0; j < 4; ++j)
 							if (ent->Events[j] == 210)
 							{
@@ -1456,14 +1470,14 @@ void Randomize(int seeda) {
 										storyends[st].push_back({ StoryEntryType_Event, 0, 0, ent->Events[j], -1, -1, -1 });
 								break;
 							}
-							else if (ent->Events[j] != -1)
+							else if (ent->Events[j] != -1 && (ent->Events[j] < 300 || !skipFMV))
 							{
 								storypool.push_back({ StoryEntryType_Event, 0, 0, ent->Events[j], -1, -1, -1 });
 								++storylengths[st];
 							}
 					break;
 				case StoryEntryType_Level:
-					if (vanillaEnd && storyMode != 2 && ent->Level == LevelIDs_SonicVsShadow2)
+					if (vanillaEnd && storyMode != storyModes_Combined && ent->Level == LevelIDs_SonicVsShadow2)
 					{
 						storyends[st].push_back(*ent++);
 						storyends[st].push_back(*ent++);
@@ -1497,13 +1511,11 @@ void Randomize(int seeda) {
 					}
 					break;
 				case StoryEntryType_Credits:
-					if (storyMode != 2)
+					if (storyMode != storyModes_Combined)
 					{
 						storyends[st].push_back(*ent++);
 						storyends[st].push_back(*ent);
 					}
-					else
-						++ent;
 					break;
 				}
 		}
@@ -1520,7 +1532,37 @@ void Randomize(int seeda) {
 
 		StoryEntry* poolptr = storypool.data();
 
-		if (cutPlace == 1)
+		switch (cutPlace)
+		{
+		case cutPlaces_Random:
+			if (!vanillaEnd)
+			{
+				if (storyMode == storyModes_Combined)
+				{
+					WriteData((int*)0x4460B0, 0x1DEB152);
+					WriteData((int*)0x446102, 0x1DEB152);
+				}
+				else
+				{
+					int i = 0;
+					do
+					{
+						i = rand() % storypool.size();
+					} while (storypool[i].Type != StoryEntryType_Event);
+					storyends[0].insert(storyends[0].begin(), storypool[i]);
+					WriteData((int*)0x4460B0, 0x1DEB080 + storypool[i].Events[0]);
+					storypool.erase(storypool.begin() + i);
+					do
+					{
+						i = rand() % storypool.size();
+					} while (storypool[i].Type != StoryEntryType_Event);
+					storyends[1].insert(storyends[1].begin(), storypool[i]);
+					WriteData((int*)0x446102, 0x1DEB080 + storypool[i].Events[0]);
+					storypool.erase(storypool.begin() + i);
+				}
+			}
+			break;
+		case cutPlaces_Vanilla:
 		{
 			vector<StoryEntry> storypool2;
 			for (int st = 0; st < 3; ++st)
@@ -1564,10 +1606,20 @@ void Randomize(int seeda) {
 			storypool = storypool2;
 			poolptr = storypool.data();
 		}
+		break;
+		case cutPlaces_None:
+			if (!vanillaEnd)
+			{
+				storyends[0].insert(storyends[0].begin(), { StoryEntryType_Event, 0, 0, 28, -1, -1, -1 });
+				storyends[1].insert(storyends[1].begin(), { StoryEntryType_Event, 0, 0, 131, -1, -1, -1 });
+				storyends[2].push_back({ StoryEntryType_Event, 0, 0, 210, -1, -1, -1 });
+			}
+			break;
+		}
 
 		switch (storyMode)
 		{
-		case 1:
+		case storyModes_Random:
 		{
 			int rem = storypool.size();
 			storylengths[0] = rand() % (rem - 2);
@@ -1577,7 +1629,7 @@ void Randomize(int seeda) {
 			storylengths[2] = rem;
 		}
 		break;
-		case 2:
+		case storyModes_Combined:
 			storylengths[0] = 0;
 			storylengths[1] = 0;
 			storylengths[2] = storypool.size();
@@ -1593,7 +1645,7 @@ void Randomize(int seeda) {
 			StoriesNew[i]->push_back({ StoryEntryType_End });
 		}
 
-		if (storyMode == 2)
+		if (storyMode == storyModes_Combined)
 		{
 			HeroStoryNew = LastStoryNew;
 			DarkStoryNew = LastStoryNew;
@@ -4597,7 +4649,9 @@ void LoadTitleCardTextures()
 	char *v15; // esi@19
 	char filename[24]; // [sp+Ch] [bp-20h]@27
 
-	if ( TwoPlayerMode || CurrentLevel == LevelIDs_Route101280 )
+	if (hideLevChar)
+		v15 = "XX";
+	else if ( TwoPlayerMode || CurrentLevel == LevelIDs_Route101280 )
 	{
 		switch ( CurrentCharacter )
 		{
@@ -7096,15 +7150,16 @@ extern "C"
 		disRL = settings->getBool("rando", "disRandL");
 		auto cutplstr = settings->getString("rando", "cutPlace");
 		if (!cutplstr.compare("inplace"))
-			cutPlace = 1;
+			cutPlace = cutPlaces_Vanilla;
 		else if (!cutplstr.compare("exclude"))
-			cutPlace = 2;
+			cutPlace = cutPlaces_None;
 		auto storymdstr = settings->getString("rando", "storyMode");
 		if (!storymdstr.compare("random"))
-			storyMode = 1;
+			storyMode = storyModes_Random;
 		else if (!storymdstr.compare("single"))
-			storyMode = 2;
+			storyMode = storyModes_Combined;
 		vanillaEnd = settings->getBool("rando", "vanillaEnd");
+		skipFMV = settings->getBool("rando", "skipFMV");
 		replaceMadSpace = settings->getBool("OnOff", "madSwap");
 		if (settings->getBool("OnOff", "sadxRadar")) {
 			WriteData<1>((void*)0x0073A7BE, 0x0F);
@@ -7157,6 +7212,14 @@ extern "C"
 
 		if (settings->getBool("OnOffDEV", "fastLoad")) WriteData<1>((void*)0x43A889, 0x03);
 		randModels = settings->getBool("OnOffDEV", "randMod",true);
+		if (settings->getBool("OnOffDEV", "hideLevName", false))
+		{
+			WriteData((const char**)0x472934, "XX");
+			WriteData((const char**)0x47295F, "XX");
+			WriteData((const char**)0x47297C, "XX");
+			WriteData((const char**)0x472990, "XX");
+		}
+		hideLevChar = settings->getBool("OnOffDEV", "hideLevChar", false);
 		disKill = settings->getBool("OnOffDEV", "disKill");
 		if (disKill) WriteData<1>((void*)0x46AD50, 0xC3);
 		
