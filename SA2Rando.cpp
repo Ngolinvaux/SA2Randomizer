@@ -6279,7 +6279,7 @@ void reactToString(string s) {
 		}
 		else if (s.compare("!song") == 0) {
 			StopMusic();
-			PlayMusic(looping[0]);
+			PlayMusic(looping[rand() % LengthOfArray(looping)]);
 			ResetMusic();
 			currency[msg.user].currency -= cost;
 			sendChat(retMsg);
